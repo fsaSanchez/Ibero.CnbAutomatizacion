@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sistema PUI — Guía de Configuración y Despliegue</title>
+<style>
+  :root {
+    --ibero: #8B0000;
+    --ibero-dark: #5a0000;
+    --ibero-light: #fdf2f2;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --blue-50: #eff6ff;
+    --blue-700: #1d4ed8;
+    --green-50: #f0fdf4;
+    --green-700: #15803d;
+    --yellow-50: #fefce8;
+    --yellow-700: #a16207;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--gray-800);
+    background: #fff;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  /* ── Portada ─────────────────────────────────── */
+  .cover {
+    background: linear-gradient(135deg, var(--ibero) 0%, var(--ibero-dark) 100%);
+    color: #fff;
+    padding: 60px 40px;
+    margin: 0 -24px 40px;
+    text-align: center;
+  }
+  .cover-logo {
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    opacity: .9;
+  }
+  .cover h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 15px; opacity: .8; margin-bottom: 24px; }
+  .cover .meta {
+    font-size: 12px;
+    opacity: .6;
+    border-top: 1px solid rgba(255,255,255,.3);
+    padding-top: 16px;
+  }
+
+  /* ── TOC ─────────────────────────────────────── */
+  .toc {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 20px 28px;
+    margin-bottom: 40px;
+  }
+  .toc h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-500); margin-bottom: 12px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 4px; font-size: 13px; color: var(--ibero); }
+  .toc li a { color: var(--ibero); text-decoration: none; }
+  .toc li a:hover { text-decoration: underline; }
+
+  /* ── Secciones ───────────────────────────────── */
+  .section { margin-bottom: 48px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 2px solid var(--ibero);
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+  }
+  .section-num {
+    background: var(--ibero);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-header h2 { font-size: 18px; font-weight: 700; color: var(--ibero); }
+
+  h3 { font-size: 14px; font-weight: 700; color: var(--gray-800); margin: 20px 0 8px; }
+  p  { margin-bottom: 10px; }
+  ul, ol { padding-left: 22px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  /* ── Code ────────────────────────────────────── */
+  code {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 12px;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: var(--ibero-dark);
+  }
+  pre {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 12px;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 12px 0;
+    line-height: 1.7;
+  }
+  pre .comment { color: #6c7086; }
+  pre .key     { color: #89dceb; }
+  pre .val     { color: #a6e3a1; }
+  pre .str     { color: #f5c2e7; }
+  pre .kw      { color: #cba6f7; }
+
+  /* ── Callouts ────────────────────────────────── */
+  .note, .warn, .tip, .danger {
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 12.5px;
+  }
+  .note   { background: var(--blue-50);   border-left: 4px solid var(--blue-700);   color: var(--blue-700); }
+  .tip    { background: var(--green-50);  border-left: 4px solid var(--green-700);  color: var(--green-700); }
+  .warn   { background: var(--yellow-50); border-left: 4px solid var(--yellow-700); color: var(--yellow-700); }
+  .danger { background: var(--ibero-light); border-left: 4px solid var(--ibero);    color: var(--ibero-dark); }
+  .note strong, .warn strong, .tip strong, .danger strong { display: block; margin-bottom: 4px; }
+
+  /* ── Tabla ───────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 12.5px; }
+  th { background: var(--ibero); color: #fff; text-align: left; padding: 8px 12px; font-weight: 600; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--gray-50); }
+
+  /* ── Steps ───────────────────────────────────── */
+  .step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+  }
+  .step-num {
+    background: var(--ibero);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-body { flex: 1; }
+  .step-body strong { display: block; margin-bottom: 4px; font-size: 13px; }
+  .step-body p { margin: 0; color: var(--gray-700); }
+
+  /* ── Badge ───────────────────────────────────── */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .badge-red    { background: #fee2e2; color: var(--ibero-dark); }
+  .badge-green  { background: #dcfce7; color: #166534; }
+  .badge-yellow { background: #fef9c3; color: #713f12; }
+
+  /* ── Print ───────────────────────────────────── */
+  @media print {
+    body { max-width: 100%; padding: 0 10mm; font-size: 11px; }
+    .cover { margin: -10mm -10mm 30px; padding: 40px 20px; }
+    .section { page-break-inside: avoid; }
+    pre { font-size: 10px; }
+    @page { margin: 15mm 10mm; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     PORTADA
+══════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-logo">PUI</div>
+  <h1>Sistema de Alertas de Personas Desaparecidas</h1>
+  <div class="subtitle">Universidad Iberoamericana — Área de Sistemas</div>
+  <div class="subtitle" style="font-size:14px; font-weight:600; opacity:.9; margin-bottom:6px;">
+    Guía de Configuración y Despliegue
+  </div>
+  <div class="meta">
+    Generado: Mayo 2026 &nbsp;·&nbsp; Versión 1.0 &nbsp;·&nbsp; Uso interno
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     TABLA DE CONTENIDO
+══════════════════════════════════════════════════ -->
+<div class="toc">
+  <h2>Contenido</h2>
+  <ol>
+    <li><a href="#requisitos">Requisitos previos</a></li>
+    <li><a href="#azure">Microsoft Graph API (Azure AD)</a></li>
+    <li><a href="#facebook">Meta Graph API (Facebook Page)</a></li>
+    <li><a href="#bd">Base de datos SQL Server</a></li>
+    <li><a href="#appsettings">Archivo appsettings.json</a></li>
+    <li><a href="#configuracion-sistema">Configuración inicial en la BD</a></li>
+    <li><a href="#carpetas">Carpetas de almacenamiento en disco</a></li>
+    <li><a href="#jwt">Clave JWT segura</a></li>
+    <li><a href="#iis-api">Despliegue IIS — API (.NET)</a></li>
+    <li><a href="#iis-react">Despliegue IIS — Portal React</a></li>
+    <li><a href="#verificacion">Verificación del sistema</a></li>
+    <li><a href="#mantenimiento">Mantenimiento y renovación de tokens</a></li>
+  </ol>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     1. REQUISITOS
+══════════════════════════════════════════════════ -->
+<div class="section" id="requisitos">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2>Requisitos previos</h2>
+  </div>
+
+  <p>Antes de comenzar, confirma que el servidor tiene instalado y disponible lo siguiente:</p>
+
+  <table>
+    <tr><th>Componente</th><th>Versión mínima</th><th>Verificación</th></tr>
+    <tr><td>Windows Server</td><td>2019 o superior</td><td><code>winver</code></td></tr>
+    <tr><td>.NET Runtime</td><td>10.0</td><td><code>dotnet --version</code></td></tr>
+    <tr><td>IIS</td><td>10 (módulo ASP.NET Core)</td><td>Panel "Características de Windows"</td></tr>
+    <tr><td>SQL Server</td><td>2019+ (Express válido)</td><td><code>SELECT @@VERSION</code></td></tr>
+    <tr><td>Node.js (solo para build)</td><td>20 LTS</td><td><code>node --version</code></td></tr>
+    <tr><td>Acceso a internet</td><td>Salida HTTPS en el servidor</td><td>Necesario para Graph API y Facebook</td></tr>
+  </table>
+
+  <div class="note">
+    <strong>Nota — ASP.NET Core Hosting Bundle</strong>
+    Para que IIS ejecute la API .NET, instala el <em>ASP.NET Core Hosting Bundle</em> desde dotnet.microsoft.com. Incluye el Runtime y el módulo IIS necesario.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     2. AZURE AD / MICROSOFT GRAPH
+══════════════════════════════════════════════════ -->
+<div class="section" id="azure">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2>Microsoft Graph API (Azure AD)</h2>
+  </div>
+
+  <p>El sistema lee correos del buzón <code>pui@ibero.mx</code> usando la Microsoft Graph API con autenticación de aplicación (sin usuario interactivo). La configuración se divide en dos partes: registro de la app en Azure AD y restricción del acceso a solo ese buzón mediante <strong>Application Access Policy</strong> en Exchange Online.</p>
+
+  <div class="note">
+    <strong>Por qué se necesita Application Access Policy</strong>
+    Microsoft Graph API solo permite pedir permisos de correo a nivel de tenant completo (<code>Mail.Read</code> = acceso a todos los buzones). No existe un permiso nativo de Azure AD para un solo buzón. Sin embargo, <strong>Exchange Online</strong> ofrece un mecanismo oficial para restringir ese permiso a un buzón específico mediante una política. El área de Seguridad puede auditar y verificar esta restricción con un solo comando.
+  </div>
+
+  <div class="warn">
+    <strong>Quién debe hacer esto</strong>
+    Requiere dos roles: administrador de Azure AD (pasos 2.1) y administrador de Exchange Online (pasos 2.2). Pueden ser la misma persona o distintas.
+  </div>
+
+  <h3>2.1 Registro de aplicación en Azure AD</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Iniciar sesión en Azure Portal</strong>
+      <p>Ve a <code>portal.azure.com</code> e inicia sesión con tu cuenta institucional de administrador de Azure AD.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Crear el registro de aplicación</strong>
+      <p>En el buscador escribe <em>Registros de aplicaciones</em> → <strong>+ Nuevo registro</strong>.<br/>
+        Nombre: <code>PUI-Ibero-Automatizacion</code><br/>
+        Tipo de cuenta: <em>Solo cuentas de este directorio organizativo</em><br/>
+        URI de redirección: dejar vacío. Clic en <strong>Registrar</strong>.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>Copiar los IDs</strong>
+      <p>En la página de resumen, copia y guarda:<br/>
+        • <strong>Id. de aplicación (cliente)</strong> → <code>ClientId</code><br/>
+        • <strong>Id. de directorio (inquilino)</strong> → <code>TenantId</code>
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <strong>Crear el secreto de cliente</strong>
+      <p><em>Certificados y secretos</em> → <em>Secretos de cliente</em> → <strong>+ Nuevo secreto de cliente</strong>.<br/>
+        Descripción: <code>PUI-Secret</code> | Caducidad: <em>24 meses</em>.<br/>
+        Clic en <strong>Agregar</strong> y copia inmediatamente el <strong>Valor</strong> (solo visible una vez). Este es el <code>ClientSecret</code>.
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <strong>Agregar permisos de API</strong>
+      <p><em>Permisos de API</em> → <strong>+ Agregar un permiso</strong> → <em>Microsoft Graph</em> → <em>Permisos de aplicación</em>.<br/>
+        Agrega únicamente:
+      </p>
+      <ul>
+        <li><code>Mail.Read</code> — leer correos</li>
+        <li><code>Mail.ReadWrite</code> — marcar correos como leídos</li>
+      </ul>
+      <p>Clic en <strong>Conceder consentimiento de administrador</strong>. Confirma.<br/>
+        <em>Nota: estos permisos parecen globales, pero en el paso 2.2 los restringimos a solo <code>pui@ibero.mx</code>.</em>
+      </p>
+    </div>
+  </div>
+
+  <h3>2.2 Restringir el acceso a solo <code>pui@ibero.mx</code> (Exchange Online)</h3>
+
+  <p>Este es el paso clave para la aprobación del área de Seguridad. Se crea un grupo de seguridad con solo el buzón <code>pui@ibero.mx</code> y una política que impide que la app acceda a cualquier otro buzón.</p>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <strong>Instalar el módulo de Exchange Online (si no está)</strong>
+      <p>En PowerShell como administrador en cualquier equipo con acceso a internet:</p>
+      <pre>Install-Module -Name ExchangeOnlineManagement -Scope CurrentUser -Force</pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">7</div>
+    <div class="step-body">
+      <strong>Conectarse a Exchange Online</strong>
+      <pre>Connect-ExchangeOnline -UserPrincipalName <span class="str">admin@ibero.mx</span></pre>
+      <p>Se abrirá el navegador para autenticarse con la cuenta de administrador de Exchange.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">8</div>
+    <div class="step-body">
+      <strong>Crear grupo de seguridad solo con el buzón PUI</strong>
+      <pre>New-DistributionGroup `
+  -Name <span class="str">"PUI-Buzon-Acceso"</span> `
+  -Alias <span class="str">"pui-buzon-acceso"</span> `
+  -Type Security `
+  -Members <span class="str">"pui@ibero.mx"</span></pre>
+      <p>Este grupo contendrá únicamente el buzón al que se permite el acceso.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">9</div>
+    <div class="step-body">
+      <strong>Crear la política de restricción</strong>
+      <p>Reemplaza <code>&lt;ClientId&gt;</code> con el valor copiado en el paso 3:</p>
+      <pre>New-ApplicationAccessPolicy `
+  -AppId <span class="str">"&lt;ClientId-de-la-app&gt;"</span> `
+  -PolicyScopeGroupId <span class="str">"pui-buzon-acceso"</span> `
+  -AccessRight RestrictAccess `
+  -Description <span class="str">"PUI-Ibero: acceso restringido solo al buzon pui@ibero.mx"</span></pre>
+      <p><code>RestrictAccess</code> significa que la app <strong>solo puede acceder</strong> a los buzones dentro del grupo. Todo lo demás queda bloqueado automáticamente.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">10</div>
+    <div class="step-body">
+      <strong>Verificar que la política funciona</strong>
+      <p>Ejecuta estas dos pruebas. La primera debe devolver <code>Granted</code>, la segunda <code>Denied</code>:</p>
+      <pre><span class="comment"># Debe devolver: Granted</span>
+Test-ApplicationAccessPolicy `
+  -AppId <span class="str">"&lt;ClientId&gt;"</span> `
+  -Identity <span class="str">"pui@ibero.mx"</span>
+
+<span class="comment"># Debe devolver: Denied (cualquier otro buzón)</span>
+Test-ApplicationAccessPolicy `
+  -AppId <span class="str">"&lt;ClientId&gt;"</span> `
+  -Identity <span class="str">"rector@ibero.mx"</span></pre>
+      <p>Estos comandos son la evidencia auditable que puedes presentar al área de Seguridad.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">11</div>
+    <div class="step-body">
+      <strong>Desconectarse</strong>
+      <pre>Disconnect-ExchangeOnline -Confirm:$false</pre>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>Resultado esperado</strong>
+    Al finalizar tendrás 3 valores para appsettings: <code>TenantId</code>, <code>ClientId</code> y <code>ClientSecret</code>. La política de Exchange garantiza que, aunque el permiso de Azure AD sea amplio técnicamente, en la práctica la app solo puede leer el buzón <code>pui@ibero.mx</code> y ningún otro. Esto es auditable y reversible en cualquier momento.
+  </div>
+
+  <div class="note">
+    <strong>El backend no requiere ningún cambio</strong>
+    La restricción opera completamente del lado de Microsoft. El código ya está preparado para trabajar con este esquema sin modificaciones.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     3. FACEBOOK / META GRAPH API
+══════════════════════════════════════════════════ -->
+<div class="section" id="facebook">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2>Meta Graph API (Facebook Page)</h2>
+  </div>
+
+  <p>El sistema publica alertas en la página de Facebook del CNB-Ibero usando la Meta Graph API. Necesitas un <strong>Page Access Token de larga duración</strong> y el <strong>Page ID</strong>.</p>
+
+  <div class="warn">
+    <strong>Quién debe hacer esto</strong>
+    Necesitas ser administrador de la página de Facebook del CNB-Ibero y tener acceso a Meta for Developers.
+  </div>
+
+  <h3>3.1 Crear la aplicación en Meta for Developers</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Ir a Meta for Developers</strong>
+      <p>Entra a <code>developers.facebook.com</code> con la cuenta de Facebook del administrador de la página.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Crear nueva app</strong>
+      <p>Clic en <strong>Mis apps</strong> → <strong>Crear app</strong>. Selecciona el tipo <em>Business</em>. Nombre: <code>PUI-Ibero</code>. Vincula tu cuenta de negocio de Meta si aplica.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>Agregar el producto "Pages API"</strong>
+      <p>En el panel de la app, ve a <em>Agregar productos</em> y agrega <strong>Facebook Login for Business</strong> (o simplemente <strong>Pages API</strong> dependiendo de la versión del portal).</p>
+    </div>
+  </div>
+
+  <h3>3.2 Obtener el Page ID</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Buscar el ID de la página</strong>
+      <p>Ve a la página de Facebook del CNB-Ibero. En el menú de la página (los tres puntos), selecciona <em>Acerca de</em>. Desplázate hasta el final para ver el <strong>ID de página</strong>. También puedes encontrarlo en <em>Configuración de la página</em> → <em>Información de la página</em>.</p>
+    </div>
+  </div>
+
+  <h3>3.3 Generar el Page Access Token</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Abrir el Explorador de la API Graph</strong>
+      <p>Ve a <code>developers.facebook.com/tools/explorer</code>. Selecciona tu aplicación en el menú desplegable superior derecho.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Generar token de usuario</strong>
+      <p>Clic en <strong>Generate Access Token</strong>. Selecciona los permisos:<br/>
+        <code>pages_show_list</code>, <code>pages_read_engagement</code>, <code>pages_manage_posts</code>, <code>publish_to_groups</code> (si aplica).
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>Obtener token de página</strong>
+      <p>Con el token de usuario activo, haz esta petición en el explorador:</p>
+      <pre>GET /me/accounts</pre>
+      <p>La respuesta mostrará las páginas administradas. Copia el <code>access_token</code> correspondiente a la página del CNB-Ibero. Este es el <strong>Page Access Token de corta duración</strong>.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <strong>Convertir a token de larga duración (60 días)</strong>
+      <p>Abre esta URL en el navegador (reemplaza los valores):</p>
+      <pre>https://graph.facebook.com/oauth/access_token
+  ?grant_type=fb_exchange_token
+  &amp;client_id=<span class="str">{APP_ID}</span>
+  &amp;client_secret=<span class="str">{APP_SECRET}</span>
+  &amp;fb_exchange_token=<span class="str">{PAGE_ACCESS_TOKEN_CORTO}</span></pre>
+      <p>El <code>access_token</code> en la respuesta JSON dura 60 días. Úsalo como <code>AccessToken</code> en appsettings.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <strong>Verificar el token</strong>
+      <p>En el Explorador de la API Graph, usa <em>Información del token</em> (ícono de información junto al token) para confirmar que el token tiene los permisos correctos y la fecha de caducidad esperada.</p>
+    </div>
+  </div>
+
+  <div class="danger">
+    <strong>El token expira cada 60 días</strong>
+    Debes renovarlo manualmente antes de que caduque. Ver la sección 12 (Mantenimiento) para el procedimiento de renovación.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     4. BASE DE DATOS
+══════════════════════════════════════════════════ -->
+<div class="section" id="bd">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2>Base de datos SQL Server</h2>
+  </div>
+
+  <p>El esquema de base de datos debe existir antes de arrancar la aplicación. El sistema usa EF Core con un contexto ya scaffoldeado — <strong>no hay migraciones automáticas</strong>; el script SQL se aplica manualmente.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Crear la base de datos</strong>
+      <p>Abre SQL Server Management Studio (SSMS) y conéctate a <code>localhost\SQLEXPRESS</code>. Ejecuta:</p>
+      <pre><span class="kw">CREATE DATABASE</span> CNB_Ibero;
+<span class="kw">GO</span></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Aplicar el script de esquema</strong>
+      <p>Solicita al equipo el script SQL del proyecto (archivo <code>schema.sql</code>). Ábrelo en SSMS con la base de datos <code>CNB_Ibero</code> seleccionada y ejecútalo. El script crea los esquemas <code>operacion</code>, <code>bitacoras</code> y <code>catalogos</code> con todas sus tablas, vistas e índices.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>Verificar la conexión</strong>
+      <p>Desde el servidor donde correrá la API, abre PowerShell y ejecuta:</p>
+      <pre><span class="kw">Test-NetConnection</span> -ComputerName localhost -Port 1433</pre>
+      <p>Debe responder <code>TcpTestSucceeded: True</code>.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <strong>Verificar Hangfire storage</strong>
+      <p>Hangfire crea sus propias tablas automáticamente al arrancar la API por primera vez. No requiere acción manual adicional.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Autenticación Windows (Integrated Security)</strong>
+    La cadena de conexión usa <code>Integrated Security=True</code>. El usuario de Windows bajo el cual corre el Application Pool de IIS debe tener permisos <code>db_owner</code> (o al menos <code>db_datareader</code> + <code>db_datawriter</code>) en la base de datos <code>CNB_Ibero</code>.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     5. APPSETTINGS.JSON
+══════════════════════════════════════════════════ -->
+<div class="section" id="appsettings">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2>Archivo appsettings.json</h2>
+  </div>
+
+  <p>Una vez que tienes todos los valores de los pasos anteriores, completa el archivo <code>appsettings.json</code> de la API. Ubícalo en:</p>
+  <pre>C:\inetpub\wwwroot\pui-api\appsettings.json</pre>
+
+  <p>El archivo completo debe quedar así (reemplaza los valores entre <code>&lt;&gt;</code>):</p>
+
+<pre>{
+  <span class="key">"ConnectionStrings"</span>: {
+    <span class="key">"DefaultConnection"</span>: <span class="str">"Server=localhost\\SQLEXPRESS;Database=CNB_Ibero;Integrated Security=True;TrustServerCertificate=True;"</span>
+  },
+  <span class="key">"Jwt"</span>: {
+    <span class="key">"Key"</span>: <span class="str">"&lt;clave-segura-de-al-menos-32-caracteres&gt;"</span>
+    <span class="comment">// Ver sección 8 para generar esta clave</span>
+  },
+  <span class="key">"MicrosoftGraph"</span>: {
+    <span class="key">"TenantId"</span>:     <span class="str">"&lt;tenant-id-de-azure&gt;"</span>,
+    <span class="key">"ClientId"</span>:     <span class="str">"&lt;client-id-de-azure&gt;"</span>,
+    <span class="key">"ClientSecret"</span>: <span class="str">"&lt;client-secret-de-azure&gt;"</span>,
+    <span class="key">"Buzon"</span>:        <span class="str">"pui@ibero.mx"</span>
+  },
+  <span class="key">"Facebook"</span>: {
+    <span class="key">"PageId"</span>:      <span class="str">"&lt;id-de-la-pagina-de-facebook&gt;"</span>,
+    <span class="key">"AccessToken"</span>: <span class="str">"&lt;page-access-token-de-larga-duracion&gt;"</span>
+  },
+  <span class="key">"Hangfire"</span>: {
+    <span class="key">"IngestaIntervalMinutos"</span>:         5,
+    <span class="key">"ReintentoDatosIncompletosHoras"</span>: 4,
+    <span class="key">"PublicacionHoraUtc"</span>:             14
+    <span class="comment">// 14 UTC = 8:00 CST (hora Ciudad de México en invierno)</span>
+  },
+  <span class="key">"OpenAI"</span>: {
+    <span class="key">"ApiKey"</span>: <span class="str">"&lt;api-key-de-openai&gt;"</span>,
+    <span class="key">"Model"</span>:  <span class="str">"gpt-4o-mini"</span>
+  },
+  <span class="key">"Logging"</span>: {
+    <span class="key">"LogLevel"</span>: {
+      <span class="key">"Default"</span>:             <span class="str">"Information"</span>,
+      <span class="key">"Microsoft.AspNetCore"</span>: <span class="str">"Warning"</span>,
+      <span class="key">"Hangfire"</span>:            <span class="str">"Information"</span>
+    }
+  }
+}</pre>
+
+  <div class="tip">
+    <strong>OpenAI API Key</strong>
+    Crea una cuenta en <code>platform.openai.com</code> → <em>API Keys</em> → <em>Create new secret key</em>. El sistema usa el modelo <code>gpt-4o-mini</code> solo como fallback cuando la extracción por Regex no es suficiente.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     6. CONFIGURACION_SISTEMA EN BD
+══════════════════════════════════════════════════ -->
+<div class="section" id="configuracion-sistema">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2>Configuración inicial en la base de datos</h2>
+  </div>
+
+  <p>La tabla <code>catalogos.configuracion_sistema</code> contiene los parámetros que el administrador puede editar desde el portal web. Debe poblarse con los valores iniciales antes del primer arranque.</p>
+
+  <p>Ejecuta este script en SSMS sobre la base de datos <code>CNB_Ibero</code>:</p>
+
+<pre><span class="kw">INSERT INTO</span> catalogos.configuracion_sistema
+  (clave, valor, descripcion, fecha_creacion, fecha_actualizacion, activo)
+<span class="kw">VALUES</span>
+  (<span class="str">'informacion_contacto'</span>,
+   <span class="str">'Si tienes información sobre esta persona, comunícate al 800-00-85-400 (LOCATEL) o repórtalo a la Comisión Nacional de Búsqueda.'</span>,
+   <span class="str">'Texto de contacto que aparece en publicaciones de Facebook'</span>,
+   GETUTCDATE(), GETUTCDATE(), 1),
+
+  (<span class="str">'hora_publicacion_facebook'</span>,
+   <span class="str">'08:00:00'</span>,
+   <span class="str">'Hora UTC diaria de publicación automática en Facebook (formato HH:mm:ss)'</span>,
+   GETUTCDATE(), GETUTCDATE(), 1),
+
+  (<span class="str">'habilitar_publicacion_automatica'</span>,
+   <span class="str">'true'</span>,
+   <span class="str">'true para habilitar la publicación diaria automática, false para deshabilitarla'</span>,
+   GETUTCDATE(), GETUTCDATE(), 1),
+
+  (<span class="str">'ruta_almacenamiento_fotos'</span>,
+   <span class="str">'C:\Datos\PUI\Fotos\'</span>,
+   <span class="str">'Ruta en disco donde se guardan las fotos extraídas de los PDFs'</span>,
+   GETUTCDATE(), GETUTCDATE(), 1),
+
+  (<span class="str">'ruta_almacenamiento_pdfs'</span>,
+   <span class="str">'C:\Datos\PUI\PDFs\'</span>,
+   <span class="str">'Ruta en disco donde se guardan los PDFs descargados de los correos'</span>,
+   GETUTCDATE(), GETUTCDATE(), 1),
+
+  (<span class="str">'reintentos_maximos_publicacion'</span>,
+   <span class="str">'3'</span>,
+   <span class="str">'Número máximo de reintentos Hangfire para publicación en Facebook'</span>,
+   GETUTCDATE(), GETUTCDATE(), 1),
+
+  (<span class="str">'reintentos_maximos_pdf'</span>,
+   <span class="str">'3'</span>,
+   <span class="str">'Número máximo de reintentos para procesar PDFs incompletos'</span>,
+   GETUTCDATE(), GETUTCDATE(), 1),
+
+  (<span class="str">'intervalo_revision_correos_minutos'</span>,
+   <span class="str">'5'</span>,
+   <span class="str">'Frecuencia en minutos con que Hangfire revisa nuevos correos'</span>,
+   GETUTCDATE(), GETUTCDATE(), 1),
+
+  (<span class="str">'intervalo_reintento_datos_incompletos_horas'</span>,
+   <span class="str">'4'</span>,
+   <span class="str">'Frecuencia en horas para reintentar PDFs con datos incompletos'</span>,
+   GETUTCDATE(), GETUTCDATE(), 1);
+<span class="kw">GO</span></pre>
+
+  <div class="note">
+    <strong>Estos valores son editables desde el portal</strong>
+    Una vez que el sistema está funcionando, el administrador puede modificar estos valores desde la sección <em>Configuración</em> del portal React sin necesidad de tocar la base de datos directamente.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     7. CARPETAS EN DISCO
+══════════════════════════════════════════════════ -->
+<div class="section" id="carpetas">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <h2>Carpetas de almacenamiento en disco</h2>
+  </div>
+
+  <p>El sistema guarda PDFs y fotos en disco local. Crea las carpetas y asigna los permisos correctos antes de arrancar la API.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Crear las carpetas</strong>
+      <p>Abre PowerShell como administrador en el servidor y ejecuta:</p>
+      <pre>New-Item -ItemType Directory -Force -Path "C:\Datos\PUI\PDFs"
+New-Item -ItemType Directory -Force -Path "C:\Datos\PUI\Fotos"</pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Asignar permisos al usuario del Application Pool</strong>
+      <p>El Application Pool de IIS corre bajo una identidad (por defecto <code>IIS AppPool\pui-api</code>). Ese usuario necesita escritura en estas carpetas:</p>
+      <pre>$user = "IIS AppPool\pui-api"
+icacls "C:\Datos\PUI" /grant "${user}:(OI)(CI)F" /T</pre>
+      <p>Reemplaza <code>pui-api</code> con el nombre exacto de tu Application Pool.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>Verificar</strong>
+      <p>Confirma que la estructura existe:</p>
+      <pre>Get-ChildItem C:\Datos\PUI</pre>
+      <p>Debes ver las carpetas <code>PDFs</code> y <code>Fotos</code>.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     8. JWT KEY
+══════════════════════════════════════════════════ -->
+<div class="section" id="jwt">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <h2>Clave JWT segura</h2>
+  </div>
+
+  <p>El archivo actual trae una clave de desarrollo temporal. <strong>Debes reemplazarla antes de producción.</strong> La clave debe tener al menos 32 caracteres aleatorios.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Generar la clave con PowerShell</strong>
+      <pre>$bytes = New-Object byte[] 48
+[Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+[Convert]::ToBase64String($bytes)</pre>
+      <p>Copia el resultado (será algo como <code>abc123.../xYz==</code>). Ese es tu <code>Jwt:Key</code>.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Guardar la clave de forma segura</strong>
+      <p>Guarda esta clave en el gestor de contraseñas institucional (LastPass, 1Password, Bitwarden o KeePass). Si se pierde, todos los tokens JWT activos dejarán de funcionar.</p>
+    </div>
+  </div>
+
+  <div class="danger">
+    <strong>No compartir ni versionar esta clave</strong>
+    La clave JWT nunca debe estar en el repositorio Git ni enviarse por correo o chat. Solo debe existir en el servidor de producción y en el gestor de contraseñas.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     9. DESPLIEGUE IIS — API .NET
+══════════════════════════════════════════════════ -->
+<div class="section" id="iis-api">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <h2>Despliegue en IIS — API .NET</h2>
+  </div>
+
+  <h3>9.1 Publicar la aplicación</h3>
+
+  <p>Desde la máquina de desarrollo, ejecuta en la carpeta raíz del proyecto:</p>
+  <pre>dotnet publish Ibero.CnbAutomatizacion.API\Ibero.CnbAutomatizacion.API.csproj ^
+  --configuration Release ^
+  --output C:\publish\pui-api</pre>
+
+  <p>Copia el contenido de <code>C:\publish\pui-api</code> al servidor en <code>C:\inetpub\wwwroot\pui-api\</code>.</p>
+
+  <h3>9.2 Crear el Application Pool</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Abrir el Administrador de IIS</strong>
+      <p>En el servidor, abre <em>Administrador de Internet Information Services (IIS)</em>. En el panel izquierdo, ve a <em>Grupos de aplicaciones</em>.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Crear nuevo Application Pool</strong>
+      <p>Clic derecho → <em>Agregar grupo de aplicaciones</em>.<br/>
+        Nombre: <code>pui-api</code><br/>
+        Versión de .NET CLR: <em>Sin código administrado</em> (ASP.NET Core se autogestiona)<br/>
+        Modo de canalización administrada: <em>Integrado</em>
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>Crear el sitio web</strong>
+      <p>En <em>Sitios</em> → clic derecho → <em>Agregar sitio web</em>.<br/>
+        Nombre: <code>pui-api</code><br/>
+        Grupo de aplicaciones: <code>pui-api</code><br/>
+        Ruta física: <code>C:\inetpub\wwwroot\pui-api</code><br/>
+        Puerto: <code>5000</code> (o el que corresponda)
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <strong>Verificar web.config</strong>
+      <p>En la carpeta publicada debe existir un archivo <code>web.config</code> generado automáticamente por .NET con el handler de ASP.NET Core. Si no existe, créalo con este contenido mínimo:</p>
+      <pre>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;configuration&gt;
+  &lt;system.webServer&gt;
+    &lt;handlers&gt;
+      &lt;add name="aspNetCore" path="*" verb="*"
+           modules="AspNetCoreModuleV2"
+           resourceType="Unspecified" /&gt;
+    &lt;/handlers&gt;
+    &lt;aspNetCore processPath="dotnet"
+                arguments=".\Ibero.CnbAutomatizacion.API.dll"
+                stdoutLogEnabled="true"
+                stdoutLogFile=".\logs\stdout"
+                hostingModel="inprocess" /&gt;
+  &lt;/system.webServer&gt;
+&lt;/configuration&gt;</pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <strong>Crear carpeta de logs</strong>
+      <pre>New-Item -ItemType Directory -Force -Path "C:\inetpub\wwwroot\pui-api\logs"
+icacls "C:\inetpub\wwwroot\pui-api\logs" /grant "IIS AppPool\pui-api:(OI)(CI)F"</pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <strong>Iniciar el sitio y verificar</strong>
+      <p>En IIS, selecciona el sitio <code>pui-api</code> y clic en <em>Examinar *:5000 (http)</em>. Debe responder con un JSON <code>{"success":false}</code> o similar. También verifica <code>http://localhost:5000/scalar</code> para ver la documentación de la API.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     10. DESPLIEGUE IIS — REACT
+══════════════════════════════════════════════════ -->
+<div class="section" id="iis-react">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <h2>Despliegue en IIS — Portal React</h2>
+  </div>
+
+  <h3>10.1 Configurar la URL de la API</h3>
+
+  <p>Antes de compilar, crea el archivo <code>.env.production</code> en la carpeta <code>FrontReactCNB/portal-cnbIbero/</code>:</p>
+  <pre>VITE_API_URL=http://&lt;ip-o-dominio-del-servidor&gt;:5000</pre>
+
+  <h3>10.2 Compilar el portal</h3>
+
+  <p>Desde la máquina de desarrollo, en la carpeta <code>portal-cnbIbero</code>:</p>
+  <pre>npm install
+npm run build</pre>
+
+  <p>Esto genera la carpeta <code>dist/</code>. Copia su contenido al servidor en <code>C:\inetpub\wwwroot\pui-portal\</code>.</p>
+
+  <h3>10.3 Crear el sitio en IIS</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Agregar sitio web</strong>
+      <p>En IIS: <em>Sitios</em> → <em>Agregar sitio web</em>.<br/>
+        Nombre: <code>pui-portal</code><br/>
+        Grupo de aplicaciones: puedes usar <code>DefaultAppPool</code> (es HTML/JS estático)<br/>
+        Ruta física: <code>C:\inetpub\wwwroot\pui-portal</code><br/>
+        Puerto: <code>80</code> (o <code>443</code> con SSL)
+      </p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Configurar URL Rewrite para SPA</strong>
+      <p>React Router necesita que todas las rutas desconocidas regresen <code>index.html</code>. Instala el módulo <em>URL Rewrite</em> de IIS (descargable desde iis.net) y crea el archivo <code>web.config</code> en <code>C:\inetpub\wwwroot\pui-portal\</code>:</p>
+      <pre>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;configuration&gt;
+  &lt;system.webServer&gt;
+    &lt;rewrite&gt;
+      &lt;rules&gt;
+        &lt;rule name="SPA Routes" stopProcessing="true"&gt;
+          &lt;match url=".*" /&gt;
+          &lt;conditions logicalGrouping="MatchAll"&gt;
+            &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /&gt;
+            &lt;add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /&gt;
+          &lt;/conditions&gt;
+          &lt;action type="Rewrite" url="/index.html" /&gt;
+        &lt;/rule&gt;
+      &lt;/rules&gt;
+    &lt;/rewrite&gt;
+  &lt;/system.webServer&gt;
+&lt;/configuration&gt;</pre>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     11. VERIFICACIÓN
+══════════════════════════════════════════════════ -->
+<div class="section" id="verificacion">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <h2>Verificación del sistema</h2>
+  </div>
+
+  <p>Sigue esta lista en orden para confirmar que todo está funcionando correctamente.</p>
+
+  <table>
+    <tr><th>#</th><th>Qué verificar</th><th>Cómo verificarlo</th><th>Resultado esperado</th></tr>
+    <tr>
+      <td>1</td>
+      <td>API responde</td>
+      <td>Abre <code>http://servidor:5000/scalar</code></td>
+      <td>Página de documentación Scalar carga</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>BD conectada</td>
+      <td>Llama <code>GET /api/personas</code></td>
+      <td>JSON con <code>"success":true</code> y lista vacía o con datos</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Hangfire dashboard</td>
+      <td>Abre <code>http://localhost:5000/hangfire</code> (desde el servidor)</td>
+      <td>Dashboard con los 4 jobs registrados</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Ingesta manual de correos</td>
+      <td>En el dashboard de Hangfire, ejecuta manualmente <em>ingesta-correos</em></td>
+      <td>El job termina en verde. Si el buzón tiene correos, aparecen en <code>GET /api/personas</code></td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Portal React</td>
+      <td>Abre <code>http://servidor:80</code></td>
+      <td>Pantalla de bienvenida PUI carga correctamente</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Vista pública</td>
+      <td>Clic en "Iniciar como Usuario Público"</td>
+      <td>Listado de personas (puede estar vacío). Sin botones de admin.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>Vista administrador</td>
+      <td>Clic en "Iniciar como Administrador"</td>
+      <td>Sidebar visible con links Configuración y Bitácora</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>Publicación en Facebook</td>
+      <td>En una tarjeta de persona con datos completos, clic en "Publicar"</td>
+      <td>El post aparece en la página de Facebook en segundos</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>Configuración del sistema</td>
+      <td>Ve a la sección Configuración en el portal admin</td>
+      <td>Lista de 9 parámetros editables</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>Bitácora</td>
+      <td>Ve a la sección Bitácora → tab Publicaciones</td>
+      <td>Registro de la publicación del paso 8</td>
+    </tr>
+  </table>
+
+  <div class="warn">
+    <strong>Si el job de ingesta falla</strong>
+    Revisa los logs en <code>C:\inetpub\wwwroot\pui-api\logs\stdout_*.log</code> y también en el dashboard de Hangfire (tab <em>Failed</em>). El error más común es credenciales incorrectas de Azure AD.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     12. MANTENIMIENTO
+══════════════════════════════════════════════════ -->
+<div class="section" id="mantenimiento">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <h2>Mantenimiento y renovación de tokens</h2>
+  </div>
+
+  <h3>Token de Facebook (cada 60 días)</h3>
+
+  <p>El Page Access Token de Facebook expira aproximadamente cada 60 días. Programa un recordatorio para renovarlo antes de que caduque.</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Verificar la caducidad del token actual</strong>
+      <p>Ve al Explorador de la API Graph (<code>developers.facebook.com/tools/explorer</code>), pega el token actual en el campo y usa <em>Información del token</em> para ver la fecha de expiración.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Generar nuevo token de larga duración</strong>
+      <p>Repite el proceso de la sección 3.3 (pasos 1 al 4) para obtener un nuevo token.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>Actualizar appsettings.json en el servidor</strong>
+      <p>Edita el archivo en <code>C:\inetpub\wwwroot\pui-api\appsettings.json</code> y reemplaza el valor de <code>Facebook.AccessToken</code>. Después, reinicia el Application Pool:</p>
+      <pre>Restart-WebAppPool -Name "pui-api"</pre>
+    </div>
+  </div>
+
+  <h3>Secreto de Azure AD (cada 24 meses)</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Generar nuevo secreto</strong>
+      <p>En el portal de Azure, ve al registro de la aplicación <code>PUI-Ibero-Automatizacion</code> → <em>Certificados y secretos</em> → agrega un nuevo secreto antes de que caduque el actual.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Actualizar appsettings y reiniciar</strong>
+      <p>Igual que con el token de Facebook: actualiza <code>MicrosoftGraph.ClientSecret</code> y reinicia el Application Pool.</p>
+    </div>
+  </div>
+
+  <h3>Monitoreo general</h3>
+
+  <table>
+    <tr><th>Revisión</th><th>Frecuencia</th><th>Dónde</th></tr>
+    <tr><td>Jobs fallidos en Hangfire</td><td>Diaria</td><td><code>http://localhost:5000/hangfire</code> → tab Failed</td></tr>
+    <tr><td>Bitácora de publicaciones</td><td>Diaria</td><td>Portal admin → Bitácora → Publicaciones</td></tr>
+    <tr><td>Caducidad del token Facebook</td><td>Mensual</td><td>Meta for Developers → Explorador de Graph API</td></tr>
+    <tr><td>Espacio en disco (PDFs y Fotos)</td><td>Mensual</td><td><code>Get-ChildItem C:\Datos\PUI -Recurse | Measure-Object -Property Length -Sum</code></td></tr>
+    <tr><td>Caducidad del secreto de Azure</td><td>Cada 20 meses</td><td>Portal Azure → Registro de app → Certificados y secretos</td></tr>
+  </table>
+
+  <div class="tip">
+    <strong>Integración con autenticación real</strong>
+    El portal React actualmente usa autenticación simulada (Redux local). Cuando el área de TI defina el sistema de autenticación institucional (LDAP, SSO, Azure AD B2C, etc.), se deberá implementar el flujo de login real en el hook <code>useAuth.js</code> y conectarlo con el endpoint de autenticación correspondiente. Los endpoints protegidos de la API ya están configurados con JWT Bearer y solo requieren que el token tenga una firma válida con la clave en <code>appsettings.json</code>.
+  </div>
+</div>
+
+<!-- ── Footer ─────────────────────────────────── -->
+<div style="margin-top:60px; padding-top:20px; border-top:1px solid #e5e7eb; text-align:center; font-size:11px; color:#9ca3af;">
+  Sistema PUI — Universidad Iberoamericana · Área de Sistemas · Documento de uso interno · Mayo 2026
+</div>
+
+</body>
+</html>

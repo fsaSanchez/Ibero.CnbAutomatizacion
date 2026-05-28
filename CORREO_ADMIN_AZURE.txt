@@ -1,0 +1,144 @@
+Para:    [administrador TI Azure / Exchange]
+Asunto:  Solicitud de configuración Azure AD + Exchange — Sistema PUI Personas Desaparecidas
+
+─────────────────────────────────────────────────────────────────────────────
+
+Hola [nombre],
+
+Te escribo para solicitar apoyo con la configuración de acceso a Microsoft 365
+necesaria para el Sistema PUI (Personas Desaparecidas Ibero), desarrollado por
+el Área de Sistemas.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CONTEXTO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El sistema automatiza la recepción de alertas de personas desaparecidas que
+llegan al buzón institucional pui@ibero.mx. Cada alerta viene en formato PDF
+adjunto; el sistema las lee, extrae los datos estructurados y los publica en
+la página de Facebook del CNB-Ibero, eliminando el proceso manual que hoy
+realiza el equipo.
+
+Para lograr esto, la aplicación necesita leer correos del buzón pui@ibero.mx
+de forma automatizada, sin intervención humana, usando la Microsoft Graph API.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CÓMO QUEDA RESTRINGIDO EL ACCESO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Microsoft Graph API solo permite solicitar el permiso Mail.Read a nivel de
+tenant (no existe un permiso nativo por buzón individual). Sin embargo,
+Exchange Online ofrece un mecanismo oficial llamado "Application Access Policy"
+que restringe ese permiso a un buzón específico del lado del servidor.
+
+En la práctica esto significa:
+
+  ✅ La aplicación PUEDE leer pui@ibero.mx
+  ❌ La aplicación NO PUEDE leer ningún otro buzón del dominio
+
+Si la app intentara acceder a cualquier otro correo institucional, Exchange
+devuelve un error 403 (acceso denegado) directamente desde los servidores de
+Microsoft, sin importar lo que intente el sistema en el código.
+
+La restricción es auditable en cualquier momento con el siguiente comando
+de PowerShell desde Exchange Online:
+
+    Test-ApplicationAccessPolicy -AppId "<ClientId>" -Identity "pui@ibero.mx"
+    → Resultado: Granted
+
+    Test-ApplicationAccessPolicy -AppId "<ClientId>" -Identity "cualquier.otro@ibero.mx"
+    → Resultado: Denied
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PASOS A REALIZAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PARTE A — Azure AD (portal.azure.com)
+──────────────────────────────────────
+
+1. Ir a "Registros de aplicaciones" → "+ Nuevo registro"
+     Nombre:           PUI-Ibero-Automatizacion
+     Tipo de cuenta:   Solo cuentas de este directorio organizativo
+     URI de redirección: (dejar vacío)
+     → Clic en Registrar
+
+2. En la página de resumen de la app recién creada, copiar y compartirme:
+     • Id. de aplicación (cliente)  → ClientId
+     • Id. de directorio (inquilino) → TenantId
+
+3. Ir a "Certificados y secretos" → "Secretos de cliente" → "+ Nuevo secreto"
+     Descripción: PUI-Secret
+     Caducidad:   24 meses
+     → Clic en Agregar
+     → Copiar inmediatamente el Valor del secreto (solo se muestra una vez)
+       y compartirlo conmigo de forma segura (por favor NO por correo en texto
+       plano; podemos usar el gestor de contraseñas institucional o una llamada)
+
+4. Ir a "Permisos de API" → "+ Agregar un permiso" → "Microsoft Graph"
+   → "Permisos de aplicación" → buscar y agregar:
+       Mail.Read      (leer correos del buzón)
+       Mail.ReadWrite (marcar correos como leídos)
+   → Clic en "Conceder consentimiento de administrador" → Confirmar
+
+
+PARTE B — Exchange Online (PowerShell)
+───────────────────────────────────────
+
+5. Instalar el módulo de Exchange Online (si no está instalado):
+
+       Install-Module -Name ExchangeOnlineManagement -Scope CurrentUser -Force
+
+6. Conectarse a Exchange Online:
+
+       Connect-ExchangeOnline -UserPrincipalName <tu-cuenta-admin@ibero.mx>
+
+7. Crear un grupo de seguridad que contenga únicamente el buzón PUI:
+
+       New-DistributionGroup `
+         -Name "PUI-Buzon-Acceso" `
+         -Alias "pui-buzon-acceso" `
+         -Type Security `
+         -Members "pui@ibero.mx"
+
+8. Crear la política de restricción (reemplazar <ClientId> con el valor del paso 2):
+
+       New-ApplicationAccessPolicy `
+         -AppId "<ClientId>" `
+         -PolicyScopeGroupId "pui-buzon-acceso" `
+         -AccessRight RestrictAccess `
+         -Description "PUI-Ibero: acceso restringido solo al buzon pui@ibero.mx"
+
+9. Verificar que la política funciona correctamente:
+
+       # Debe devolver: Granted
+       Test-ApplicationAccessPolicy -AppId "<ClientId>" -Identity "pui@ibero.mx"
+
+       # Debe devolver: Denied
+       Test-ApplicationAccessPolicy -AppId "<ClientId>" -Identity "rector@ibero.mx"
+
+   Si ambas respuestas son las esperadas, la configuración es correcta y
+   el acceso está restringido formalmente.
+
+10. Desconectarse:
+
+       Disconnect-ExchangeOnline -Confirm:$false
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LO QUE NECESITO QUE ME COMPARTAS AL TERMINAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  • TenantId    (obtenido en el paso 2)
+  • ClientId    (obtenido en el paso 2)
+  • ClientSecret (obtenido en el paso 3 — por canal seguro)
+
+Con esos tres valores configuro el sistema y queda listo para pruebas.
+
+Quedo a tu disposición si tienes alguna duda en cualquiera de los pasos.
+Muchas gracias de antemano.
+
+Saludos,
+[tu nombre]
+Área de Sistemas — Universidad Iberoamericana
+
+─────────────────────────────────────────────────────────────────────────────

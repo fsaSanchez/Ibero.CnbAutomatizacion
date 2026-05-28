@@ -7,7 +7,9 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\hp-envy\\\\Documents\\\\CNB\\\\FrontReactCNB\" -Recurse -Force)",
       "Bash(Select-Object FullName)",
       "Bash(Sort-Object FullName)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(Start-Process *)",
+      "PowerShell(Start-Process \"C:\\\\Users\\\\hp-envy\\\\Documents\\\\CNB\\\\Ibero.CnbAutomatizacion\\\\Ibero.CnbAutomatizacion\\\\GUIA_CONFIGURACION.html\")"
     ]
   }
 }
