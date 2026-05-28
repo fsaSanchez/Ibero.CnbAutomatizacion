@@ -50,11 +50,8 @@ public class ProcesamientoPdfService : IProcesamientoPdfService
 
     public async Task ProcesarPendientesAsync()
     {
-        var correos = await _correoRawRepo.GetAllAsync();
-        var pendientes = correos.Where(c => c.EstadoProcesamiento == "pendiente").ToList();
-
+        var pendientes = await _correoRawRepo.GetByEstadoAsync("pendiente");
         _logger.LogInformation("Procesando PDFs de {Total} correos pendientes", pendientes.Count);
-
         foreach (var correo in pendientes)
             await ProcesarCorreoAsync(correo);
     }
@@ -64,13 +61,8 @@ public class ProcesamientoPdfService : IProcesamientoPdfService
         var maxReintentos = int.Parse(
             await _configRepo.ObtenerValorAsync("reintentos_maximos_pdf", "3"));
 
-        var correos = await _correoRawRepo.GetAllAsync();
-        var incompletos = correos
-            .Where(c => c.EstadoProcesamiento == "incompleto" && (c.Reintentos ?? 0) < maxReintentos)
-            .ToList();
-
+        var incompletos = await _correoRawRepo.GetByEstadoAsync("incompleto", maxReintentos);
         _logger.LogInformation("Reintentando {Total} correos incompletos", incompletos.Count);
-
         foreach (var correo in incompletos)
             await ProcesarCorreoAsync(correo);
     }

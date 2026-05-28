@@ -81,8 +81,10 @@ builder.Services.AddHttpClient<IFacebookGraphClient, FacebookGraphClient>(client
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
-// ── Filtros genéricos ──────────────────────────────────────────────────────────
+// ── Filtros genéricos y dashboard ─────────────────────────────────────────────
 builder.Services.AddScoped(typeof(FilterValidation<>));
+builder.Services.AddSingleton<HangfireDashboardAuthorizationFilter>();
+builder.Services.AddScoped<ActualizarJobsScheduleJob>();
 
 // ── Mapster ───────────────────────────────────────────────────────────────────
 var mapsterConfig = Mapster.TypeAdapterConfig.GlobalSettings;
@@ -162,26 +164,39 @@ app.UseCors("IberoPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ── Hangfire Dashboard y Jobs recurrentes ──────────────────────────────────────
-app.UseHangfireDashboard("/hangfire");
+// ── Hangfire Dashboard ─────────────────────────────────────────────────────────
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = [app.Services.GetRequiredService<HangfireDashboardAuthorizationFilter>()]
+});
 
-var intervalo = builder.Configuration.GetValue<int>("Hangfire:IngestaIntervalMinutos", 5);
-RecurringJob.AddOrUpdate<IngestaCorreosJob>(
-    "ingesta-correos",
-    job => job.Ejecutar(),
-    Cron.MinuteInterval(intervalo));
+// ── Schedules: inicializar desde BD (fallback a appsettings si BD no responde) ─
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        await scope.ServiceProvider
+            .GetRequiredService<ActualizarJobsScheduleJob>()
+            .Ejecutar();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "No se pudo inicializar schedules desde BD. Usando valores de appsettings.");
+        var cfg = app.Configuration;
+        RecurringJob.AddOrUpdate<IngestaCorreosJob>("ingesta-correos", j => j.Ejecutar(),
+            Cron.MinuteInterval(cfg.GetValue<int>("Hangfire:IngestaIntervalMinutos", 5)));
+        RecurringJob.AddOrUpdate<ReintentoDatosIncompletosJob>("reintento-datos-incompletos", j => j.Ejecutar(),
+            Cron.HourInterval(cfg.GetValue<int>("Hangfire:ReintentoDatosIncompletosHoras", 4)));
+        RecurringJob.AddOrUpdate<PublicacionDiariaJob>("publicacion-diaria-facebook", j => j.Ejecutar(),
+            Cron.Daily(cfg.GetValue<int>("Hangfire:PublicacionHoraUtc", 14)));
+    }
+}
 
-var intervaloReintento = builder.Configuration.GetValue<int>("Hangfire:ReintentoDatosIncompletosHoras", 4);
-RecurringJob.AddOrUpdate<ReintentoDatosIncompletosJob>(
-    "reintento-datos-incompletos",
+// Refresca schedules diariamente desde configuracion_sistema (a medianoche UTC)
+RecurringJob.AddOrUpdate<ActualizarJobsScheduleJob>(
+    "actualizar-schedules",
     job => job.Ejecutar(),
-    Cron.HourInterval(intervaloReintento));
-
-var horaPublicacion = builder.Configuration.GetValue<int>("Hangfire:PublicacionHoraUtc", 14);
-RecurringJob.AddOrUpdate<PublicacionDiariaJob>(
-    "publicacion-diaria-facebook",
-    job => job.Ejecutar(),
-    Cron.Daily(horaPublicacion));
+    Cron.Daily(0));
 
 app.MapControllers();
 

@@ -1,5 +1,6 @@
 using Ibero.CnbAutomatizacion.Data.Repository.BitacoraGenerals;
 using Ibero.CnbAutomatizacion.Data.Repository.BitacoraPublicaciones;
+using Ibero.CnbAutomatizacion.Data.Repository.ConfiguracionSistemas;
 using Ibero.CnbAutomatizacion.Data.Repository.VwPersonasPublicables;
 using Microsoft.Extensions.Logging;
 
@@ -10,10 +11,18 @@ public class PublicacionDiariaService(
     IVwPersonasPublicablesHoyRepository vwRepo,
     IPublicacionFacebookService publicacionService,
     IBitacoraGeneralRepository bitacoraGeneralRepo,
+    IConfiguracionSistemaRepository configRepo,
     ILogger<PublicacionDiariaService> logger) : IPublicacionDiariaService
 {
     public async Task EjecutarAsync()
     {
+        var habilitado = await configRepo.ObtenerValorAsync("habilitar_publicacion_automatica", "true");
+        if (!string.Equals(habilitado, "true", StringComparison.OrdinalIgnoreCase))
+        {
+            logger.LogInformation("Publicación automática deshabilitada por configuración del sistema.");
+            return;
+        }
+
         logger.LogInformation("Iniciando publicación diaria Facebook — {Fecha}", DateTime.UtcNow);
 
         if (await bitacoraPublicacionRepo.HuboPublicacionExitosaHoyAsync())

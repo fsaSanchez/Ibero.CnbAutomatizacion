@@ -25,6 +25,18 @@ public class CorreoRawRepository : ICorreoRawRepository
             .AsNoTracking()
             .ToListAsync();
 
+    public async Task<List<CorreoRaw>> GetByEstadoAsync(string estado, int? maxReintentos = null)
+    {
+        var query = _context.CorreoRaws
+            .Where(x => x.Activo == true && x.EstadoProcesamiento == estado)
+            .AsNoTracking();
+
+        if (maxReintentos.HasValue)
+            query = query.Where(x => (x.Reintentos ?? 0) < maxReintentos.Value);
+
+        return await query.ToListAsync();
+    }
+
     public async Task AddAsync(CorreoRaw entity)
     {
         _context.CorreoRaws.Add(entity);
