@@ -2,10 +2,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ibero.CnbAutomatizacion.Entity\Ibero.CnbAutomatizacion.Entity.csproj" />
+    <ProjectReference Include="..\Ibero.CnbAutomatizacion.Data\Ibero.CnbAutomatizacion.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="16.1.1" />
+    <PackageReference Include="Azure.Identity" Version="1.21.0" />
+    <PackageReference Include="Mapster" Version="10.*" />
+    <PackageReference Include="Microsoft.Graph" Version="5.*" />
+    <PackageReference Include="OpenAI" Version="2.10.0" />
+    <PackageReference Include="UglyToad.PdfPig" Version="1.7.0-custom-5" />
   </ItemGroup>
 
   <PropertyGroup>

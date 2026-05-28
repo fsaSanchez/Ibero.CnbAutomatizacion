@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet remove *)",
+      "Bash(Get-Location *)",
+      "Bash(dotnet build *)"
+    ]
+  }
+}
