@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ibero: #8B0000;
+  --color-ibero-dark: #6b0000;
+  --color-ibero-light: #a50000;
+}

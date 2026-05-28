@@ -3,7 +3,11 @@
     "allow": [
       "Bash(dotnet remove *)",
       "Bash(Get-Location *)",
-      "Bash(dotnet build *)"
+      "Bash(dotnet build *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\hp-envy\\\\Documents\\\\CNB\\\\FrontReactCNB\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(Sort-Object FullName)",
+      "Bash(npm run *)"
     ]
   }
 }
