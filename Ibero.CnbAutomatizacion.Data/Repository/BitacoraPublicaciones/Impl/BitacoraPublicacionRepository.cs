@@ -21,4 +21,18 @@ public class BitacoraPublicacionRepository : IBitacoraPublicacionRepository
             .Where(x => x.IdPersonaDesaparecida == idPersona)
             .OrderByDescending(x => x.FechaIntento)
             .ToListAsync();
+
+    public async Task RegistrarAsync(BitacoraPublicacion entity)
+    {
+        _context.BitacoraPublicacions.Add(entity);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> HuboPublicacionExitosaHoyAsync()
+    {
+        var hoy = DateTime.UtcNow.Date;
+        return await _context.BitacoraPublicacions
+            .AsNoTracking()
+            .AnyAsync(x => x.FechaIntento.Date == hoy && x.EstadoPublicacion == "exitosa");
+    }
 }

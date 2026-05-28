@@ -52,6 +52,6 @@ public class PersonaDesaparecidaService(
         if (persona is null)
             return CreateResponseFail("Persona desaparecida no encontrada", 404);
 
-        return await publicacionService.PublicarAsync(id, "alerta");
+        return await publicacionService.PublicarAsync(id, "manual");
     }
 }

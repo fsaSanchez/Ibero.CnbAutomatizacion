@@ -21,6 +21,8 @@ using Ibero.CnbAutomatizacion.Business.Service.Procesamiento.Impl;
 using Ibero.CnbAutomatizacion.Business.Service.Publicacion;
 using Ibero.CnbAutomatizacion.Business.Service.Publicacion.Impl;
 using Ibero.CnbAutomatizacion.Data.Persistence.CNB_Ibero;
+using Ibero.CnbAutomatizacion.Data.Repository.VwPersonasPublicables;
+using Ibero.CnbAutomatizacion.Data.Repository.VwPersonasPublicables.Impl;
 using Ibero.CnbAutomatizacion.Data.Repository.ArchivoCorreos;
 using Ibero.CnbAutomatizacion.Data.Repository.ArchivoCorreos.Impl;
 using Ibero.CnbAutomatizacion.Data.Repository.BitacoraGenerals;
@@ -69,6 +71,15 @@ builder.Services.AddScoped<IPersonaDesaparecidaService, PersonaDesaparecidaServi
 builder.Services.AddScoped<IConfiguracionSistemaService, ConfiguracionSistemaService>();
 builder.Services.AddScoped<IBitacoraService, BitacoraService>();
 builder.Services.AddScoped<IPublicacionFacebookService, PublicacionFacebookService>();
+builder.Services.AddScoped<IVwPersonasPublicablesHoyRepository, VwPersonasPublicablesHoyRepository>();
+builder.Services.AddScoped<IPublicacionDiariaService, PublicacionDiariaService>();
+
+// ── HttpClient para Meta Graph API (typed client) ─────────────────────────────
+builder.Services.AddHttpClient<IFacebookGraphClient, FacebookGraphClient>(client =>
+{
+    client.BaseAddress = new Uri("https://graph.facebook.com/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
 // ── Filtros genéricos ──────────────────────────────────────────────────────────
 builder.Services.AddScoped(typeof(FilterValidation<>));
@@ -165,6 +176,12 @@ RecurringJob.AddOrUpdate<ReintentoDatosIncompletosJob>(
     "reintento-datos-incompletos",
     job => job.Ejecutar(),
     Cron.HourInterval(intervaloReintento));
+
+var horaPublicacion = builder.Configuration.GetValue<int>("Hangfire:PublicacionHoraUtc", 14);
+RecurringJob.AddOrUpdate<PublicacionDiariaJob>(
+    "publicacion-diaria-facebook",
+    job => job.Ejecutar(),
+    Cron.Daily(horaPublicacion));
 
 app.MapControllers();
 

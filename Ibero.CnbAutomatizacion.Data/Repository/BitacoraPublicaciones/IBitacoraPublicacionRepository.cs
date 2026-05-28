@@ -6,4 +6,6 @@ public interface IBitacoraPublicacionRepository
 {
     Task<List<BitacoraPublicacion>> GetAllAsync();
     Task<List<BitacoraPublicacion>> GetByPersonaAsync(long idPersona);
+    Task RegistrarAsync(BitacoraPublicacion entity);
+    Task<bool> HuboPublicacionExitosaHoyAsync();
 }
