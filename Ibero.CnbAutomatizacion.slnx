@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Ibero.CnbAutomatizacion.API/Ibero.CnbAutomatizacion.API.csproj" />
+  <Project Path="Ibero.CnbAutomatizacion.Business/Ibero.CnbAutomatizacion.Business.csproj" />
+  <Project Path="Ibero.CnbAutomatizacion.Data/Ibero.CnbAutomatizacion.Data.csproj" />
+  <Project Path="Ibero.CnbAutomatizacion.Entity/Ibero.CnbAutomatizacion.Entity.csproj" />
+</Solution>
