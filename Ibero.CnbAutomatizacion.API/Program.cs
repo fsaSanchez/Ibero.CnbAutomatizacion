@@ -18,6 +18,8 @@ using Ibero.CnbAutomatizacion.Business.Service.Personas;
 using Ibero.CnbAutomatizacion.Business.Service.Personas.Impl;
 using Ibero.CnbAutomatizacion.Business.Service.Procesamiento;
 using Ibero.CnbAutomatizacion.Business.Service.Procesamiento.Impl;
+using Ibero.CnbAutomatizacion.Business.Service.CargaPdf;
+using Ibero.CnbAutomatizacion.Business.Service.CargaPdf.Impl;
 using Ibero.CnbAutomatizacion.Business.Service.Publicacion;
 using Ibero.CnbAutomatizacion.Business.Service.Publicacion.Impl;
 using Ibero.CnbAutomatizacion.Data.Persistence.CNB_Ibero;
@@ -71,6 +73,7 @@ builder.Services.AddScoped<IPersonaDesaparecidaService, PersonaDesaparecidaServi
 builder.Services.AddScoped<IConfiguracionSistemaService, ConfiguracionSistemaService>();
 builder.Services.AddScoped<IBitacoraService, BitacoraService>();
 builder.Services.AddScoped<IPublicacionFacebookService, PublicacionFacebookService>();
+builder.Services.AddScoped<ICargaPdfManualService, CargaPdfManualService>();
 builder.Services.AddScoped<IVwPersonasPublicablesHoyRepository, VwPersonasPublicablesHoyRepository>();
 builder.Services.AddScoped<IPublicacionDiariaService, PublicacionDiariaService>();
 

@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://localhost:7222'
 
 export const API = {
   personas: `${BASE_URL}/api/personas`,
@@ -9,4 +9,5 @@ export const API = {
   configuracionUpdate: (clave) => `${BASE_URL}/api/configuracion/${clave}`,
   bitacoraPublicaciones: `${BASE_URL}/api/bitacora/publicaciones`,
   bitacoraGeneral: `${BASE_URL}/api/bitacora/general`,
+  cargaPdfManual: `${BASE_URL}/api/personas/cargar-pdf-manual`,
 }

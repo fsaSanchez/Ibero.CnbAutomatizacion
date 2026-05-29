@@ -4,6 +4,7 @@ import PersonasDesaparecidasPage from './pages/PersonasDesaparecidas/PersonasDes
 import PersonaDetallePage from './pages/PersonasDesaparecidas/PersonaDetallePage'
 import ConfiguracionPage from './pages/admin/ConfiguracionPage'
 import BitacoraPage from './pages/admin/BitacoraPage'
+import CargaPdfPage from './pages/admin/CargaPdfPage'
 import Header from './components/Common/Header'
 import Footer from './components/Common/Footer'
 
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/personas" element={<PersonasDesaparecidasPage />} />
           <Route path="/personas/:id" element={<PersonaDetallePage />} />
+          <Route path="/admin/cargar-pdf" element={<CargaPdfPage />} />
           <Route path="/admin/configuracion" element={<ConfiguracionPage />} />
           <Route path="/admin/bitacora" element={<BitacoraPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
