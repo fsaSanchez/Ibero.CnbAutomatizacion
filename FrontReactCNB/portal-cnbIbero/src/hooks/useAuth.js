@@ -1,5 +1,6 @@
-import { useSelector, useDispatch } from 'react-redux'
-import { setAdminMode, setAuthenticated, setUser } from '../store/slices/authSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { setSesion, limpiarSesion } from '../store/slices/authSlice'
+import { guardarSesion, limpiarSesionStorage } from '../utilities/auth'
 
 export function useAuth() {
   const { isAdmin, isAuthenticated, user } = useSelector(s => s.auth)
@@ -9,16 +10,13 @@ export function useAuth() {
     isAdmin,
     isAuthenticated,
     user,
-    toggleAdmin: () => dispatch(setAdminMode(!isAdmin)),
-    login: (asAdmin = false) => {
-      dispatch(setAuthenticated(true))
-      dispatch(setAdminMode(asAdmin))
-      dispatch(setUser(asAdmin ? { nombre: 'Administrador' } : { nombre: 'Usuario Público' }))
+    login: (token, user) => {
+      guardarSesion(token, user)
+      dispatch(setSesion(user))
     },
     logout: () => {
-      dispatch(setAuthenticated(false))
-      dispatch(setAdminMode(false))
-      dispatch(setUser(null))
+      limpiarSesionStorage()
+      dispatch(limpiarSesion())
     },
   }
 }

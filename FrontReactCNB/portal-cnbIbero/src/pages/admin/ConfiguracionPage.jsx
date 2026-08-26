@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { API } from '../../constants/api'
+import { authHeader } from '../../utilities/auth'
 import Sidebar from '../../components/Common/Sidebar'
 
 export default function ConfiguracionPage() {
@@ -12,7 +13,7 @@ export default function ConfiguracionPage() {
 
   useEffect(() => {
     fetch(API.configuracion, {
-      headers: { Authorization: 'Bearer simulado' },
+      headers: authHeader(),
     })
       .then(r => {
         if (!r.ok) throw new Error(`Error ${r.status}`)
@@ -39,7 +40,7 @@ export default function ConfiguracionPage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer simulado',
+          ...authHeader(),
         },
         body: JSON.stringify({ valor: editando[clave] }),
       })

@@ -8,8 +8,7 @@ namespace Ibero.CnbAutomatizacion.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize]
-[AllowAnonymous]
+[Authorize]
 public class ConfiguracionController(IConfiguracionSistemaService service) : ControllerBase
 {
     [HttpGet]

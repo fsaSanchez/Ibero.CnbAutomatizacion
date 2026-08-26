@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import { API } from '../../constants/api'
+import { authHeader } from '../../utilities/auth'
 import TarjetaPersona from '../../components/PersonasDesaparecidas/TarjetaPersona'
 import FiltrosPersonas from '../../components/PersonasDesaparecidas/FiltrosPersonas'
 import Sidebar from '../../components/Common/Sidebar'
@@ -59,7 +60,7 @@ export default function PersonasDesaparecidasPage() {
 
   async function handleEliminar(id) {
     try {
-      const res = await fetch(API.eliminar(id), { method: 'DELETE' })
+      const res = await fetch(API.eliminar(id), { method: 'DELETE', headers: authHeader() })
       const json = await res.json()
       setMensaje(json.message)
       cargar()
@@ -71,7 +72,7 @@ export default function PersonasDesaparecidasPage() {
 
   async function handlePublicar(id) {
     try {
-      const res = await fetch(API.publicar(id), { method: 'POST' })
+      const res = await fetch(API.publicar(id), { method: 'POST', headers: authHeader() })
       const json = await res.json()
       setMensaje(json.message)
       cargar()

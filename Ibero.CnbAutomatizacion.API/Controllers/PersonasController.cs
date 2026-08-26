@@ -10,8 +10,7 @@ namespace Ibero.CnbAutomatizacion.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize]
-[AllowAnonymous]
+[Authorize]
 public class PersonasController : ControllerBase
 {
     private readonly IPersonaDesaparecidaService _personaDesaparecidaService;

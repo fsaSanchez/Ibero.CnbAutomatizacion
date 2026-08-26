@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 import { API } from '../../constants/api'
+import { authHeader } from '../../utilities/auth'
 import Sidebar from '../../components/Common/Sidebar'
 
 const MAX_BYTES = 10 * 1024 * 1024 // 10 MB
@@ -56,7 +57,7 @@ export default function CargaPdfPage() {
     try {
       const form = new FormData()
       form.append('archivo', archivo)
-      const res = await fetch(API.cargaPdfManual, { method: 'POST', body: form })
+      const res = await fetch(API.cargaPdfManual, { method: 'POST', headers: authHeader(), body: form })
       setResultado(await res.json())
     } catch {
       setResultado({ success: false, message: 'Error de red. Verifica la conexión con la API.' })
@@ -88,7 +89,7 @@ export default function CargaPdfPage() {
     try {
       const form = new FormData()
       form.append('archivo', archivoIndice)
-      const res = await fetch(API.listarImagenesPdf, { method: 'POST', body: form })
+      const res = await fetch(API.listarImagenesPdf, { method: 'POST', headers: authHeader(), body: form })
       const data = await res.json()
       if (data.success) {
         setImagenesIndice(data.data ?? [])

@@ -2,12 +2,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 
 export default function Header() {
-  const { isAdmin, isAuthenticated, logout, toggleAdmin } = useAuth()
+  const { isAdmin, isAuthenticated, user, logout } = useAuth()
   const navigate = useNavigate()
 
   function handleLogout() {
     logout()
-    navigate('/')
+    navigate('/personas')
   }
 
   return (
@@ -38,28 +38,24 @@ export default function Header() {
             </>
           )}
 
-          {isAuthenticated && (
-            <span className="text-red-200 text-xs border border-red-300 rounded px-2 py-0.5">
-              {isAdmin ? 'Admin' : 'Público'}
-            </span>
-          )}
-
-          {import.meta.env.DEV && isAuthenticated && (
+          {isAuthenticated ? (
+            <>
+              <span className="text-red-200 text-xs border border-red-300 rounded px-2 py-0.5">
+                {user?.nombre ?? 'Administrador'}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="bg-white/20 hover:bg-white/30 text-white text-sm px-3 py-1 rounded transition-colors cursor-pointer"
+              >
+                Cerrar sesión
+              </button>
+            </>
+          ) : (
             <button
-              onClick={toggleAdmin}
-              className="text-xs border border-white/40 rounded px-2 py-0.5 hover:bg-white/10 transition-colors cursor-pointer"
-              title="Toggle modo admin (solo dev)"
-            >
-              ⚙ {isAdmin ? 'Cambiar a Público' : 'Cambiar a Admin'}
-            </button>
-          )}
-
-          {isAuthenticated && (
-            <button
-              onClick={handleLogout}
+              onClick={() => navigate('/login')}
               className="bg-white/20 hover:bg-white/30 text-white text-sm px-3 py-1 rounded transition-colors cursor-pointer"
             >
-              Cerrar sesión
+              Iniciar sesión
             </button>
           )}
         </nav>

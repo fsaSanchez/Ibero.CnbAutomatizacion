@@ -2,13 +2,20 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: { isAdmin: false, isAuthenticated: false, user: null },
+  initialState: { isAuthenticated: false, isAdmin: false, user: null },
   reducers: {
-    setAdminMode: (state, action) => { state.isAdmin = action.payload },
-    setAuthenticated: (state, action) => { state.isAuthenticated = action.payload },
-    setUser: (state, action) => { state.user = action.payload },
+    setSesion: (state, action) => {
+      state.isAuthenticated = true
+      state.isAdmin = true
+      state.user = action.payload
+    },
+    limpiarSesion: (state) => {
+      state.isAuthenticated = false
+      state.isAdmin = false
+      state.user = null
+    },
   },
 })
 
-export const { setAdminMode, setAuthenticated, setUser } = authSlice.actions
+export const { setSesion, limpiarSesion } = authSlice.actions
 export default authSlice.reducer

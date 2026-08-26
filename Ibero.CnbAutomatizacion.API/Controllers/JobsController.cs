@@ -12,8 +12,7 @@ namespace Ibero.CnbAutomatizacion.API.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize]
-[AllowAnonymous]
+[Authorize]
 public class JobsController(IBackgroundJobClient jobClient) : ControllerBase
 {
     // POST: api/jobs/ingesta-correos

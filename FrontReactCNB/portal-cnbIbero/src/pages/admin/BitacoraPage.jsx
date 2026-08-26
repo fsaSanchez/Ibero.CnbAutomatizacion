@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { API } from '../../constants/api'
+import { authHeader } from '../../utilities/auth'
 import Sidebar from '../../components/Common/Sidebar'
 
 const TABS = [
@@ -110,7 +111,7 @@ function useBitacora(url) {
 
   useEffect(() => {
     setLoading(true)
-    fetch(url, { headers: { Authorization: 'Bearer simulado' } })
+    fetch(url, { headers: authHeader() })
       .then(r => { if (!r.ok) throw new Error(`Error ${r.status}`); return r.json() })
       .then(json => setData(json.data ?? []))
       .catch(e => setError(e.message))

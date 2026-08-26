@@ -29,7 +29,9 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git reset *)",
-      "Bash(git restore *)"
+      "Bash(git restore *)",
+      "Bash(ls \"C:/Users/hp-envy/Documents/Ibero.PortalExamen/Ibero.PortalExamen\" 2>&1)",
+      "Bash(npx vite *)"
     ]
   }
 }
