@@ -16,7 +16,7 @@ public class ActualizarJobsScheduleJob(
     {
         var intervaloIngesta = await ObtenerEntero(
             "intervalo_revision_correos_minutos",
-            configuration.GetValue<int>("Hangfire:IngestaIntervalMinutos", 5));
+            configuration.GetValue<int>("Hangfire:IngestaIntervalMinutos", 50));
 
         var intervaloReintento = await ObtenerEntero(
             "intervalo_reintento_datos_incompletos_horas",

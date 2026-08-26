@@ -10,31 +10,31 @@ public partial class RegexExtractorService : IRegexExtractorService
     {
         var ficha = new FichaExtraidaDto
         {
-            FolioUnicoIdentificacion = Buscar(FuiRegex(), texto)?.Trim(),
-            Nombre                   = Buscar(NombreRegex(), texto)?.Trim(),
-            Sexo                     = Buscar(SexoRegex(), texto)?.Trim(),
-            Genero                   = Buscar(GeneroRegex(), texto)?.Trim(),
-            EdadActual               = ParseInt(Buscar(EdadActualRegex(), texto)),
-            EdadMomentoDesaparicion  = ParseInt(Buscar(EdadDesaparicionRegex(), texto)),
-            Nacionalidad             = Buscar(NacionalidadRegex(), texto)?.Trim(),
-            LugarNacimiento          = Buscar(LugarNacimientoRegex(), texto)?.Trim(),
-            LugarHechos              = Buscar(LugarHechosRegex(), texto)?.Trim(),
-            FechaHechos              = ParseFecha(Buscar(FechaHechosRegex(), texto)),
-            FechaPercate             = ParseFecha(Buscar(FechaPercateRegex(), texto)),
-            CaracteristicasFisicas   = Buscar(CaracteristicasRegex(), texto)?.Trim(),
-            SenasParticulares        = Buscar(SenasRegex(), texto)?.Trim(),
-            PrendasVestir            = Buscar(PrendasRegex(), texto)?.Trim(),
-            AutoridadesCompetentes   = Buscar(AutoridadesRegex(), texto)?.Trim(),
-            CarpetaInvestigacion     = Buscar(CarpetaRegex(), texto)?.Trim(),
-            Idioma                   = Buscar(IdiomaRegex(), texto)?.Trim(),
-            Discapacidad             = Buscar(DiscapacidadRegex(), texto)?.Trim()
+            FolioUnicoIdentificacion = Buscar(FuiRegex(), texto, "folio")?.Trim(),
+            Nombre = Buscar(NombreRegex(), texto, "nombre")?.Trim(),
+            Sexo = Buscar(SexoRegex(), texto, "sexo")?.Trim(),
+            Genero = Buscar(GeneroRegex(), texto, "genero")?.Trim(),
+            EdadActual = ParseInt(Buscar(EdadActualRegex(), texto, "edad_actual")),
+            EdadMomentoDesaparicion = ParseInt(Buscar(EdadDesaparicionRegex(), texto, "edad_desaparicion")),
+            Nacionalidad = Buscar(NacionalidadRegex(), texto, "nacionalidad")?.Trim(),
+            LugarNacimiento = Buscar(LugarNacimientoRegex(), texto, "lugar_nacimiento")?.Trim(),
+            LugarHechos = Buscar(LugarHechosRegex(), texto, "lugar_hechos")?.Trim(),
+            FechaHechos = ParseFecha(Buscar(FechaHechosRegex(), texto, "fecha_hechos")),
+            FechaPercate = ParseFecha(Buscar(FechaPercateRegex(), texto, "fecha_percate")),
+            CaracteristicasFisicas = Buscar(CaracteristicasRegex(), texto, "caracteristicas")?.Trim(),
+            SenasParticulares = Buscar(SenasRegex(), texto, "senas")?.Trim(),
+            PrendasVestir = Buscar(PrendasRegex(), texto, "prendas")?.Trim(),
+            AutoridadesCompetentes = Buscar(AutoridadesRegex(), texto, "autoridades")?.Trim(),
+            CarpetaInvestigacion = Buscar(CarpetaRegex(), texto, "carpeta")?.Trim(),
+            Idioma = Buscar(IdiomaRegex(), texto, "idioma")?.Trim(),
+            Discapacidad = Buscar(DiscapacidadRegex(), texto, "discapacidad")?.Trim()
         };
 
         ficha.CamposIncompletos = CalcularIncompletos(ficha);
         return ficha;
     }
 
-    private static string? Buscar(Regex regex, string texto)
+    private static string? Buscar(Regex regex, string texto, string campo)
     {
         var match = regex.Match(texto);
         return match.Success ? match.Groups[1].Value : null;
@@ -46,6 +46,7 @@ public partial class RegexExtractorService : IRegexExtractorService
     private static DateOnly? ParseFecha(string? valor)
     {
         if (string.IsNullOrWhiteSpace(valor)) return null;
+
         foreach (var fmt in new[] { "dd/MM/yyyy", "d/M/yyyy", "dd-MM-yyyy" })
         {
             if (DateOnly.TryParseExact(valor.Trim(), fmt, CultureInfo.InvariantCulture,
@@ -58,22 +59,33 @@ public partial class RegexExtractorService : IRegexExtractorService
     private static List<string> CalcularIncompletos(FichaExtraidaDto f)
     {
         var incompletos = new List<string>();
+
+        void Validar(string campo, string? valor)
+        {
+            if (string.IsNullOrWhiteSpace(valor))
+                incompletos.Add(campo);
+        }
+
         if (string.IsNullOrWhiteSpace(f.FolioUnicoIdentificacion)) incompletos.Add("folio_unico_identificacion");
-        if (string.IsNullOrWhiteSpace(f.Nombre))                   incompletos.Add("nombre");
-        if (f.EdadActual == null)                                   incompletos.Add("edad_actual");
-        if (string.IsNullOrWhiteSpace(f.Sexo))                     incompletos.Add("sexo");
-        if (string.IsNullOrWhiteSpace(f.LugarHechos))              incompletos.Add("lugar_hechos");
-        if (f.FechaHechos == null)                                  incompletos.Add("fecha_hechos");
-        if (string.IsNullOrWhiteSpace(f.CarpetaInvestigacion))     incompletos.Add("carpeta_investigacion");
+        if (string.IsNullOrWhiteSpace(f.Nombre)) incompletos.Add("nombre");
+        if (f.EdadActual == null) incompletos.Add("edad_actual");
+
+        Validar("sexo", f.Sexo);
+        Validar("lugar_hechos", f.LugarHechos);
+        Validar("carpeta_investigacion", f.CarpetaInvestigacion);
+        Validar("prendas_vestir", f.PrendasVestir);
+
+        if (f.FechaHechos == null) incompletos.Add("fecha_hechos");
+
         return incompletos;
     }
 
-    // ── Patrones generados como source generators para performance ────────────
+    // ── Regex corregidos ─────────────────────────────────────────
 
-    [GeneratedRegex(@"(?i)folio\s+[uú]nico\s+de\s+identificaci[oó]n[:\s]+([A-Z0-9\-/]+)", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)folio[:\s]+([A-Z0-9\-/]+)", RegexOptions.Multiline)]
     private static partial Regex FuiRegex();
 
-    [GeneratedRegex(@"(?i)nombre[:\s]+([A-ZÁÉÍÓÚÜÑ][A-ZÁÉÍÓÚÜÑ\s]{2,60})", RegexOptions.Multiline)]
+    [GeneratedRegex(@"DESAPARECIDA\s+([A-ZÁÉÍÓÚÜÑ\s]{5,100})\s+Folio", RegexOptions.Singleline)]
     private static partial Regex NombreRegex();
 
     [GeneratedRegex(@"(?i)sexo[:\s]+([A-ZÁÉÍÓÚÜÑ]+)", RegexOptions.Multiline)]
@@ -85,42 +97,42 @@ public partial class RegexExtractorService : IRegexExtractorService
     [GeneratedRegex(@"(?i)edad\s+actual[:\s]+(\d+)", RegexOptions.Multiline)]
     private static partial Regex EdadActualRegex();
 
-    [GeneratedRegex(@"(?i)edad\s+al\s+momento[:\s]+(\d+)", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)edad\s+al\s+momento\s+de\s+la\s+desaparici[oó]n[:\s]+(\d+)", RegexOptions.Multiline)]
     private static partial Regex EdadDesaparicionRegex();
 
     [GeneratedRegex(@"(?i)nacionalidad[:\s]+([A-ZÁÉÍÓÚÜÑ]+)", RegexOptions.Multiline)]
     private static partial Regex NacionalidadRegex();
 
-    [GeneratedRegex(@"(?i)lugar\s+de\s+nacimiento[:\s]+(.+)", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)lugar\s+de\s+nacimiento[:\s]+(.+?)(?:\n|$)", RegexOptions.Multiline)]
     private static partial Regex LugarNacimientoRegex();
 
-    [GeneratedRegex(@"(?i)lugar\s+de\s+los\s+hechos[:\s]+(.+)", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)lugar\s+de\s+los\s+hechos[:\s]+(.+?)(?:\n|$)", RegexOptions.Multiline)]
     private static partial Regex LugarHechosRegex();
 
     [GeneratedRegex(@"(?i)fecha\s+de\s+(?:los\s+)?hechos[:\s]+(\d{1,2}/\d{1,2}/\d{4})", RegexOptions.Multiline)]
     private static partial Regex FechaHechosRegex();
 
-    [GeneratedRegex(@"(?i)fecha\s+de\s+percate[:\s]+(\d{1,2}/\d{1,2}/\d{4})", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)fecha\s+de\s+percato[:\s]+(\d{1,2}/\d{1,2}/\d{4})", RegexOptions.Multiline)]
     private static partial Regex FechaPercateRegex();
 
-    [GeneratedRegex(@"(?i)caracter[ií]sticas\s+f[ií]sicas[:\s]+(.+)", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)caracter[ií]sticas\s+f[ií]sicas[:\s]+(.+?)(?:\n|$)", RegexOptions.Multiline)]
     private static partial Regex CaracteristicasRegex();
 
-    [GeneratedRegex(@"(?i)se[ñn]as\s+particulares[:\s]+(.+)", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)se[ñn]as\s+particulares[:\s]+(.+?)(?:\n|$)", RegexOptions.Multiline)]
     private static partial Regex SenasRegex();
 
-    [GeneratedRegex(@"(?i)prendas\s+de\s+vestir[:\s]+(.+)", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)prendas\s+de\s+vestir:\s*(.+)", RegexOptions.Multiline)]
     private static partial Regex PrendasRegex();
 
-    [GeneratedRegex(@"(?i)autoridades\s+competentes[:\s]+(.+)", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)autoridades\s+competentes[:\s]+(.+?)(?:\n|$)", RegexOptions.Multiline)]
     private static partial Regex AutoridadesRegex();
 
-    [GeneratedRegex(@"(?i)carpeta\s+de\s+investigaci[oó]n[:\s]+(.+)", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)carpeta\s+de\s+investigaci[oó]n[:\s]+(.+?)(?:\n|$)", RegexOptions.Multiline)]
     private static partial Regex CarpetaRegex();
 
-    [GeneratedRegex(@"(?i)idioma[:\s]+([A-ZÁÉÍÓÚÜÑ\s]+)", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)idioma\s+o\s+lengua\s+ind[ií]gena[:\s]+(.+?)(?:\n|$)", RegexOptions.Multiline)]
     private static partial Regex IdiomaRegex();
 
-    [GeneratedRegex(@"(?i)discapacidad[:\s]+(.+)", RegexOptions.Multiline)]
+    [GeneratedRegex(@"(?i)discapacidad[:\s]+(.+?)(?:\n|$)", RegexOptions.Multiline)]
     private static partial Regex DiscapacidadRegex();
 }

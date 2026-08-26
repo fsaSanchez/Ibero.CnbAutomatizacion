@@ -65,17 +65,17 @@ public class PublicacionFacebookService(
             TipoPublicacion = tipoPublicacion,
             IdPublicacionExterna = idExterno,
             MensajeError = mensajeError,
-            FechaIntento = DateTime.UtcNow,
-            FechaPublicacionReal = estadoPublicacion == "exitosa" ? DateTime.UtcNow : null,
-            FechaCreacion = DateTime.UtcNow
+            FechaIntento = DateTime.Now,
+            FechaPublicacionReal = estadoPublicacion == "exitosa" ? DateTime.Now : null,
+            FechaCreacion = DateTime.Now
         };
         await bitacoraRepo.RegistrarAsync(bitacora);
 
         if (estadoPublicacion == "exitosa")
         {
             persona.FlagPublicadoFacebook = true;
-            persona.FechaPublicacionFacebook = DateTime.UtcNow;
-            persona.FechaActualizacion = DateTime.UtcNow;
+            persona.FechaPublicacionFacebook = DateTime.Now;
+            persona.FechaActualizacion = DateTime.Now;
             await personaRepo.UpdateAsync(persona);
 
             logger.LogInformation("Publicación exitosa en Facebook. Persona: {Id}, Post: {PostId}",
@@ -83,7 +83,7 @@ public class PublicacionFacebookService(
             return CreateResponseOk("Publicación exitosa en Facebook", data: new { idPublicacion = idExterno });
         }
 
-        persona.FechaActualizacion = DateTime.UtcNow;
+        persona.FechaActualizacion = DateTime.Now;
         await personaRepo.UpdateAsync(persona);
 
         return CreateResponseFail($"Error al publicar en Facebook: {mensajeError}", 502);

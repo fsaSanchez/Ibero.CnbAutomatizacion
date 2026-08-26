@@ -35,7 +35,7 @@ public class CorreoIngestaService : ICorreoIngestaService
 
     public async Task EjecutarIngestaAsync()
     {
-        _logger.LogInformation("Iniciando ingesta de correos — {Fecha}", DateTime.UtcNow);
+        _logger.LogInformation("Iniciando ingesta de correos — {Fecha}", DateTime.Now);
 
         List<MensajeCorreoGraph> correos;
         try
@@ -60,7 +60,7 @@ public class CorreoIngestaService : ICorreoIngestaService
         }
 
         await _bitacoraRepo.RegistrarAsync("INGESTA_CORREOS",
-            $"Ingesta completada. Correos procesados: {correos.Count}", "exitoso");
+            $"Ingesta completada. Correos procesados: {correos.Count}", "exitosa");
     }
 
     private async Task ProcesarCorreoAsync(MensajeCorreoGraph correo, string rutaPdfs)
@@ -74,6 +74,11 @@ public class CorreoIngestaService : ICorreoIngestaService
                 return;
             }
 
+            //Correos que indican que se detuvo una busqueda. 
+            const string textoEnAsuntoDetenerDifusion= "Cese de difusión";
+            if (correo.Asunto.Contains(textoEnAsuntoDetenerDifusion))
+                return;
+
             // Guardar correo en correo_raw
             var correoRaw = new CorreoRaw
             {
@@ -85,8 +90,8 @@ public class CorreoIngestaService : ICorreoIngestaService
                 FechaRecepcion = correo.FechaRecepcion,
                 EstadoProcesamiento = "pendiente",
                 Reintentos = 0,
-                FechaCreacion = DateTime.UtcNow,
-                FechaActualizacion = DateTime.UtcNow,
+                FechaCreacion = DateTime.Now,
+                FechaActualizacion = DateTime.Now,
                 Activo = true
             };
             await _correoRawRepo.AddAsync(correoRaw);
@@ -99,7 +104,7 @@ public class CorreoIngestaService : ICorreoIngestaService
             await _graph.MarcarComoLeidoAsync(correo.Id);
 
             await _bitacoraRepo.RegistrarAsync("INGESTA_CORREO",
-                $"Correo ingresado: {correo.Asunto}", "exitoso",
+                $"Correo ingresado: {correo.Asunto}", "exitosa",
                 idCorreoRaw: correoRaw.IdCorreoRaw);
 
             _logger.LogInformation("Correo procesado: {Asunto}", correo.Asunto);
@@ -136,8 +141,8 @@ public class CorreoIngestaService : ICorreoIngestaService
                     RutaDisco = rutaCompleta,
                     TamanoBytes = adjunto.TamanoBytes,
                     TipoContenido = adjunto.TipoContenido,
-                    FechaCreacion = DateTime.UtcNow,
-                    FechaActualizacion = DateTime.UtcNow,
+                    FechaCreacion = DateTime.Now,
+                    FechaActualizacion = DateTime.Now,
                     Activo = true
                 };
                 await _archivoCorreoRepo.AddAsync(archivoCorreo);

@@ -16,6 +16,9 @@ export default function TarjetaPersona({ persona, isAdmin, onEliminar, onPublica
   const navigate = useNavigate()
   const [modalEliminar, setModalEliminar] = useState(false)
 
+  console.log(persona);
+  
+
   return (
     <>
       <div
@@ -26,12 +29,12 @@ export default function TarjetaPersona({ persona, isAdmin, onEliminar, onPublica
           {persona.rutaFotoPrincipal ? (
             <img
               src={persona.rutaFotoPrincipal}
-              alt={persona.nombre}
+              alt={persona.nombre }
               className="w-full h-full object-cover"
               onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
             />
           ) : null}
-          <Iniciales nombre={persona.nombre} />
+          <Iniciales nombre={persona.nombre +""} />
         </div>
 
         <div className="p-3 flex flex-col flex-1 overflow-hidden">

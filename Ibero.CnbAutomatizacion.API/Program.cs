@@ -49,6 +49,11 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true);
+}
+
 // ── DbContext ──────────────────────────────────────────────────────────────────
 builder.Services.AddDbContext<CNB_IberoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -187,7 +192,7 @@ using (var scope = app.Services.CreateScope())
         app.Logger.LogWarning(ex, "No se pudo inicializar schedules desde BD. Usando valores de appsettings.");
         var cfg = app.Configuration;
         RecurringJob.AddOrUpdate<IngestaCorreosJob>("ingesta-correos", j => j.Ejecutar(),
-            Cron.MinuteInterval(cfg.GetValue<int>("Hangfire:IngestaIntervalMinutos", 5)));
+            Cron.MinuteInterval(cfg.GetValue<int>("Hangfire:IngestaIntervalMinutos", 120)));
         RecurringJob.AddOrUpdate<ReintentoDatosIncompletosJob>("reintento-datos-incompletos", j => j.Ejecutar(),
             Cron.HourInterval(cfg.GetValue<int>("Hangfire:ReintentoDatosIncompletosHoras", 4)));
         RecurringJob.AddOrUpdate<PublicacionDiariaJob>("publicacion-diaria-facebook", j => j.Ejecutar(),

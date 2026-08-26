@@ -19,6 +19,13 @@ export default function CargaPdfPage() {
   const [errorLocal, setErrorLocal] = useState(null)
   const inputRef = useRef(null)
 
+  const [mostrarProbador, setMostrarProbador] = useState(false)
+  const [archivoIndice, setArchivoIndice] = useState(null)
+  const [analizando, setAnalizando] = useState(false)
+  const [imagenesIndice, setImagenesIndice] = useState(null)
+  const [errorIndice, setErrorIndice] = useState(null)
+  const inputIndiceRef = useRef(null)
+
   function validar(file) {
     if (!file) return 'No se seleccionó ningún archivo.'
     if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf'))
@@ -63,6 +70,43 @@ export default function CargaPdfPage() {
     setResultado(null)
     setErrorLocal(null)
     if (inputRef.current) inputRef.current.value = ''
+  }
+
+  function seleccionarIndice(file) {
+    const err = validar(file)
+    if (err) { setErrorIndice(err); setArchivoIndice(null); return }
+    setErrorIndice(null)
+    setImagenesIndice(null)
+    setArchivoIndice(file)
+  }
+
+  async function handleAnalizarIndice() {
+    if (!archivoIndice) return
+    setAnalizando(true)
+    setImagenesIndice(null)
+    setErrorIndice(null)
+    try {
+      const form = new FormData()
+      form.append('archivo', archivoIndice)
+      const res = await fetch(API.listarImagenesPdf, { method: 'POST', body: form })
+      const data = await res.json()
+      if (data.success) {
+        setImagenesIndice(data.data ?? [])
+      } else {
+        setErrorIndice(data.message ?? 'No se pudo analizar el PDF.')
+      }
+    } catch {
+      setErrorIndice('Error de red. Verifica la conexión con la API.')
+    } finally {
+      setAnalizando(false)
+    }
+  }
+
+  function resetearIndice() {
+    setArchivoIndice(null)
+    setImagenesIndice(null)
+    setErrorIndice(null)
+    if (inputIndiceRef.current) inputIndiceRef.current.value = ''
   }
 
   return (
@@ -210,6 +254,88 @@ export default function CargaPdfPage() {
             </div>
           </div>
         )}
+
+        {/* Apartado: Probar índice de foto */}
+        <div className="mt-10 border-t border-gray-200 pt-6">
+          <button
+            onClick={() => setMostrarProbador(v => !v)}
+            className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-gray-900 cursor-pointer"
+          >
+            <span className={`inline-block transition-transform ${mostrarProbador ? 'rotate-90' : ''}`}>▶</span>
+            Probar índice de foto
+          </button>
+          <p className="text-xs text-gray-500 mt-1 ml-5">
+            Sube un PDF de muestra y revisa todas sus imágenes con su página e índice, para saber
+            qué valor configurar en <strong>indice_foto</strong> cuando cambie el formato de la ficha.
+          </p>
+
+          {mostrarProbador && (
+            <div className="mt-4 ml-5">
+              <div className="flex flex-wrap items-center gap-3">
+                <input
+                  ref={inputIndiceRef}
+                  type="file"
+                  accept=".pdf,application/pdf"
+                  onChange={e => seleccionarIndice(e.target.files?.[0])}
+                  className="text-xs text-gray-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 file:cursor-pointer cursor-pointer"
+                />
+                <button
+                  onClick={handleAnalizarIndice}
+                  disabled={!archivoIndice || analizando}
+                  style={archivoIndice && !analizando ? { backgroundColor: '#8B0000' } : {}}
+                  className="px-4 py-2 text-xs font-semibold text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed hover:opacity-90 transition cursor-pointer"
+                >
+                  {analizando ? 'Analizando...' : 'Analizar PDF'}
+                </button>
+                {(archivoIndice || imagenesIndice) && !analizando && (
+                  <button
+                    onClick={resetearIndice}
+                    className="px-3 py-2 text-xs border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer text-gray-600"
+                  >
+                    Limpiar
+                  </button>
+                )}
+              </div>
+
+              {errorIndice && (
+                <p className="mt-3 text-xs text-red-600 font-medium">{errorIndice}</p>
+              )}
+
+              {imagenesIndice && imagenesIndice.length > 0 && (
+                <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  {imagenesIndice.map((img, i) => (
+                    <div key={i} className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+                      <img
+                        src={`data:${img.tipoContenido};base64,${img.imagenBase64}`}
+                        alt={`Página ${img.pagina} · Índice ${img.indice}`}
+                        className="w-full h-32 object-contain bg-gray-50"
+                      />
+                      <div className="p-2 text-center">
+                        <p className="text-xs font-semibold text-gray-800">
+                          Página {img.pagina} · Índice {img.indice}
+                        </p>
+                        <p className="text-[10px] text-gray-400">{(img.tamanoBytes / 1024).toFixed(0)} KB</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {imagenesIndice && imagenesIndice.length === 0 && (
+                <p className="mt-3 text-xs text-gray-500">No se encontraron imágenes en este PDF.</p>
+              )}
+
+              {imagenesIndice && imagenesIndice.length > 0 && (
+                <p className="mt-3 text-xs text-gray-500">
+                  Identifica la foto correcta y actualiza el valor <strong>indice_foto</strong> en{' '}
+                  <a href="/admin/configuracion" style={{ color: '#8B0000' }} className="font-semibold hover:underline">
+                    Configuración
+                  </a>.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -20,7 +20,7 @@ public class BitacoraGeneralRepository : IBitacoraGeneralRepository
             IdCorreoRaw = idCorreoRaw,
             IdPersonaDesaparecida = idPersonaDesaparecida,
             MensajeError = mensajeError,
-            FechaAccion = DateTime.UtcNow
+            FechaAccion = DateTime.Now
         };
         _context.BitacoraGenerals.Add(entrada);
         await _context.SaveChangesAsync();

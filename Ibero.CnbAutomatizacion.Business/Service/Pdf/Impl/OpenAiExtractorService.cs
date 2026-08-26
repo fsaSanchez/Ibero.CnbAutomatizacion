@@ -31,13 +31,19 @@ public class OpenAiExtractorService : IOpenAiExtractorService
         try
         {
             var completion = await _chatClient.CompleteChatAsync(
-            [
+
+                 
+                [
                 new SystemChatMessage(
                     "Eres un extractor de datos de fichas de búsqueda de personas desaparecidas mexicanas. " +
                     "Responde SOLO con un objeto JSON válido con los campos solicitados. " +
-                    "Si no encuentras el dato, usa null. No incluyas texto adicional."),
+                    "Si no encuentras el dato, usa null. No incluyas texto adicional."+
+             "Sin markdown, sin ```json, sin texto extra."),
                 new UserChatMessage(prompt)
-            ]);
+            ],new ChatCompletionOptions()
+            {
+                ResponseFormat = ChatResponseFormat.CreateJsonObjectFormat()
+            });
 
             var json = completion.Value.Content[0].Text;
             AplicarRespuestaJson(json, parcial);

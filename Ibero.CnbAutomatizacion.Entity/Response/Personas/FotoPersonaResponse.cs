@@ -7,4 +7,5 @@ public class FotoPersonaResponse
     public string NombreArchivo { get; set; } = string.Empty;
     public long TamanoBytes { get; set; }
     public bool Principal { get; set; }
+    public string Image64{ get; set; }
 }

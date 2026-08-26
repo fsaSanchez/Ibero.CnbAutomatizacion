@@ -23,7 +23,7 @@ public class PublicacionDiariaService(
             return;
         }
 
-        logger.LogInformation("Iniciando publicación diaria Facebook — {Fecha}", DateTime.UtcNow);
+        logger.LogInformation("Iniciando publicación diaria Facebook — {Fecha}", DateTime.Now);
 
         if (await bitacoraPublicacionRepo.HuboPublicacionExitosaHoyAsync())
         {
@@ -44,7 +44,7 @@ public class PublicacionDiariaService(
 
         var resultado = await publicacionService.PublicarAsync(candidato.IdPersonaDesaparecida, "automatica");
 
-        var estadoAccion = resultado.Success ? "exitoso" : "error";
+        var estadoAccion = resultado.Success ? "exitosa" : "error";
         await bitacoraGeneralRepo.RegistrarAsync(
             "PUBLICACION_DIARIA",
             $"Publicación automática persona {candidato.IdPersonaDesaparecida}: {resultado.Message}",

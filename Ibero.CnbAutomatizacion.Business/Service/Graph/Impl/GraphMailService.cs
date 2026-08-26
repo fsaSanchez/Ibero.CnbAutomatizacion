@@ -41,7 +41,7 @@ public class GraphMailService : IGraphMailService
                 Id: msg.Id!,
                 Asunto: msg.Subject,
                 Remitente: msg.From?.EmailAddress?.Address,
-                FechaRecepcion: msg.ReceivedDateTime?.UtcDateTime ?? DateTime.UtcNow,
+                FechaRecepcion: msg.ReceivedDateTime?.UtcDateTime ?? DateTime.Now,
                 Cuerpo: msg.Body?.Content));
         }
 
@@ -80,7 +80,7 @@ public class GraphMailService : IGraphMailService
 
     public async Task MarcarComoLeidoAsync(string mensajeId)
     {
-        await _graphClient.Users[_buzon].Messages[mensajeId]
-            .PatchAsync(new Message { IsRead = true });
+        //await _graphClient.Users[_buzon].Messages[mensajeId]
+        //    .PatchAsync(new Message { IsRead = true });
     }
 }

@@ -78,7 +78,7 @@ public class ProcesamientoPdfService : IProcesamientoPdfService
         {
             correo.EstadoProcesamiento = "error";
             correo.MensajeError = "No se encontraron PDFs adjuntos";
-            correo.FechaActualizacion = DateTime.UtcNow;
+            correo.FechaActualizacion = DateTime.Now;
             await _correoRawRepo.UpdateAsync(correo);
             await _bitacoraRepo.RegistrarAsync("PROCESAMIENTO_PDF",
                 "No se encontraron PDFs adjuntos", "error",
@@ -103,8 +103,8 @@ public class ProcesamientoPdfService : IProcesamientoPdfService
             : hayIncompleto ? "incompleto"
             : "completo";
         correo.Reintentos = (correo.Reintentos ?? 0) + 1;
-        correo.FechaProcesamiento = DateTime.UtcNow;
-        correo.FechaActualizacion = DateTime.UtcNow;
+        correo.FechaProcesamiento = DateTime.Now;
+        correo.FechaActualizacion = DateTime.Now;
         await _correoRawRepo.UpdateAsync(correo);
     }
 
@@ -177,8 +177,8 @@ public class ProcesamientoPdfService : IProcesamientoPdfService
                     : null,
                 FlagPublicadoFacebook    = false,
                 IntentoPublicacionFacebook = 0,
-                FechaCreacion            = DateTime.UtcNow,
-                FechaActualizacion       = DateTime.UtcNow,
+                FechaCreacion            = DateTime.Now,
+                FechaActualizacion       = DateTime.Now,
                 Activo                   = true
             };
             await _personaRepo.AddAsync(persona);
@@ -188,7 +188,7 @@ public class ProcesamientoPdfService : IProcesamientoPdfService
                 ficha.FolioUnicoIdentificacion!, rutaFotos);
 
             await _bitacoraRepo.RegistrarAsync("PROCESAMIENTO_PDF",
-                $"PDF procesado: {estado}. FUI: {ficha.FolioUnicoIdentificacion}", "exitoso",
+                $"PDF procesado: {estado}. FUI: {ficha.FolioUnicoIdentificacion}", "exitosa",
                 idCorreoRaw: correo.IdCorreoRaw,
                 idPersonaDesaparecida: persona.IdPersonaDesaparecida);
 
@@ -230,8 +230,8 @@ public class ProcesamientoPdfService : IProcesamientoPdfService
                 TamanoBytes           = fotoBytes.Length,
                 TipoContenido         = ext == ".png" ? "image/png" : "image/jpeg",
                 Principal             = true,
-                FechaCreacion         = DateTime.UtcNow,
-                FechaActualizacion    = DateTime.UtcNow,
+                FechaCreacion         = DateTime.Now,
+                FechaActualizacion    = DateTime.Now,
                 Activo                = true
             };
             await _fotoRepo.AddAsync(foto);

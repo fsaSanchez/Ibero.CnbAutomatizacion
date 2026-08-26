@@ -6,7 +6,8 @@ namespace Ibero.CnbAutomatizacion.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+//[Authorize]
+[AllowAnonymous]
 public class BitacoraController(IBitacoraService service) : ControllerBase
 {
     [HttpGet("publicaciones")]

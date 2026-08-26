@@ -25,7 +25,7 @@ public class ConfiguracionSistemaService(IConfiguracionSistemaRepository reposit
             return CreateResponseFail("Esta configuración no es editable");
 
         config.Valor = request.Valor;
-        config.FechaActualizacion = DateTime.UtcNow;
+        config.FechaActualizacion = DateTime.Now;
         await repository.UpdateAsync(config);
         return CreateResponseOk("Configuración actualizada correctamente");
     }

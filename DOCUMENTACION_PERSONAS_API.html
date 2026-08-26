@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentación — PersonasController | Sistema PUI Ibero</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    color: #1a1a1a;
+    background: #f5f5f5;
+    line-height: 1.6;
+  }
+  .page { max-width: 960px; margin: 0 auto; background: white; padding: 48px 56px; }
+
+  /* Portada */
+  .cover {
+    text-align: center;
+    padding: 60px 0 48px;
+    border-bottom: 3px solid #8B0000;
+    margin-bottom: 48px;
+  }
+  .cover .badge {
+    display: inline-block;
+    background: #8B0000;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 18px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .cover h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #8B0000;
+    margin-bottom: 6px;
+  }
+  .cover h2 {
+    font-size: 16px;
+    font-weight: 400;
+    color: #555;
+    margin-bottom: 24px;
+  }
+  .cover .meta {
+    font-size: 12px;
+    color: #888;
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+  }
+  .cover .meta span::before { margin-right: 6px; }
+
+  /* Índice */
+  .toc { background: #fafafa; border: 1px solid #e8e8e8; border-radius: 8px; padding: 24px 28px; margin-bottom: 40px; }
+  .toc h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #888; margin-bottom: 14px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { color: #8B0000; text-decoration: none; font-weight: 500; }
+  .toc a:hover { text-decoration: underline; }
+  .toc .sub { margin-top: 4px; padding-left: 16px; font-size: 13px; color: #666; }
+
+  /* Endpoint card */
+  .endpoint {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 36px;
+    overflow: hidden;
+    page-break-inside: avoid;
+  }
+  .endpoint-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .method {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    border-radius: 5px;
+    min-width: 58px;
+    text-align: center;
+  }
+  .method.get    { background: #e8f5e9; color: #2e7d32; }
+  .method.post   { background: #e3f2fd; color: #1565c0; }
+  .method.delete { background: #fce4ec; color: #c62828; }
+
+  .endpoint-route {
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: #222;
+  }
+  .endpoint-title {
+    margin-left: auto;
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
+  }
+
+  .access-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+  .access-public  { background: #e8f5e9; color: #388e3c; }
+  .access-private { background: #fff3e0; color: #e65100; }
+
+  .endpoint-body { padding: 24px 28px; }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: #8B0000;
+    margin-bottom: 10px;
+    margin-top: 20px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  /* Descripción */
+  .desc { color: #333; margin-bottom: 4px; }
+
+  /* Parámetros */
+  .param-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 4px; }
+  .param-table th {
+    background: #f5f5f5;
+    text-align: left;
+    padding: 7px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #666;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .param-table td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+  .param-table tr:last-child td { border-bottom: none; }
+  .param-name { font-family: 'Courier New', monospace; font-weight: 700; color: #333; }
+  .param-type { color: #888; font-size: 12px; }
+  .param-req  { color: #c62828; font-size: 11px; font-weight: 700; }
+  .param-opt  { color: #888; font-size: 11px; }
+
+  /* Flujo de pasos */
+  .flow { list-style: none; padding: 0; counter-reset: step; }
+  .flow li {
+    counter-increment: step;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+  .flow li::before {
+    content: counter(step);
+    background: #8B0000;
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .flow li .step-text { color: #333; }
+  .flow li .step-text strong { color: #111; }
+  .flow li .step-text .note {
+    display: block;
+    font-size: 12px;
+    color: #777;
+    margin-top: 3px;
+  }
+
+  /* Sub-flujo */
+  .sub-flow { list-style: none; padding-left: 16px; margin-top: 6px; }
+  .sub-flow li {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 5px;
+    color: #555;
+    font-size: 13px;
+  }
+  .sub-flow li::before { content: "→"; color: #8B0000; font-weight: 700; }
+
+  /* Servicios consumidos */
+  .services-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .service-tag {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    color: #444;
+  }
+
+  /* Tablas BD */
+  .db-table { display: flex; flex-wrap: wrap; gap: 8px; }
+  .db-tag {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 5px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    color: #5d4037;
+  }
+
+  /* Respuesta */
+  .response-box {
+    background: #f9fbe7;
+    border: 1px solid #dce775;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #33691e;
+  }
+  .response-box .field { margin-bottom: 3px; }
+  .response-box .field span { font-family: 'Courier New', monospace; font-weight: 700; color: #1b5e20; }
+
+  /* Alertas */
+  .alert {
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin-top: 4px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .alert-warn  { background: #fff8e1; border-left: 4px solid #ffc107; color: #795548; }
+  .alert-info  { background: #e3f2fd; border-left: 4px solid #2196f3; color: #1565c0; }
+  .alert-error { background: #fce4ec; border-left: 4px solid #f44336; color: #b71c1c; }
+  .alert-icon  { font-size: 16px; flex-shrink: 0; }
+
+  /* Divisor de sección */
+  .section-sep { border: none; border-top: 2px solid #8B0000; margin: 48px 0 36px; opacity: 0.15; }
+
+  /* Arquitectura */
+  .arch-box {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px 24px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #333;
+    line-height: 2;
+  }
+  .arch-box .layer { display: flex; align-items: center; gap: 8px; }
+  .arch-box .layer-name { font-weight: 700; color: #8B0000; min-width: 90px; }
+  .arch-box .arrow { color: #aaa; }
+
+  /* Footer */
+  .doc-footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    font-size: 11px;
+    color: #aaa;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @media print {
+    body { background: white; }
+    .page { padding: 32px; max-width: 100%; }
+    .endpoint { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Portada -->
+  <div class="cover">
+    <div class="badge">Documentación técnica</div>
+    <h1>PersonasController</h1>
+    <h2>Sistema PUI — Alertas de Personas Desaparecidas · Universidad Iberoamericana</h2>
+    <div class="meta">
+      <span>📍 Ruta base: <strong>/api/personas</strong></span>
+      <span>📦 5 endpoints documentados</span>
+      <span>📅 Mayo 2026</span>
+    </div>
+  </div>
+
+  <!-- Arquitectura general -->
+  <p class="section-label">Arquitectura del controlador</p>
+  <p class="desc" style="margin-bottom:16px;">
+    El controlador <strong>PersonasController</strong> es la puerta de entrada pública y administrativa para la gestión de personas desaparecidas registradas en el sistema. Coordina dos servicios principales: uno para consultar, eliminar y publicar fichas, y otro específico para la carga manual de PDFs.
+  </p>
+  <div class="arch-box" style="margin-bottom:24px;">
+    <div class="layer"><span class="layer-name">HTTP Request</span><span class="arrow">→</span> PersonasController &nbsp;(valida parámetros, decide qué servicio llama)</div>
+    <div class="layer"><span class="layer-name">Servicios</span><span class="arrow">→</span> PersonaDesaparecidaService &nbsp;|&nbsp; CargaPdfManualService</div>
+    <div class="layer"><span class="layer-name">Sub-servicios</span><span class="arrow">→</span> PublicacionFacebookService &nbsp;|&nbsp; PdfExtractorService &nbsp;|&nbsp; RegexExtractorService &nbsp;|&nbsp; OpenAiExtractorService</div>
+    <div class="layer"><span class="layer-name">Repositorios</span><span class="arrow">→</span> Base de datos SQL Server</div>
+  </div>
+
+  <div class="alert alert-info">
+    <span class="alert-icon">ℹ️</span>
+    <span>Todos los endpoints devuelven siempre HTTP 200 con un objeto <strong>CommonResponse</strong> que incluye los campos <em>success</em>, <em>code</em>, <em>message</em> y <em>data</em>. Los errores no lanzan excepciones HTTP; se expresan mediante <em>success: false</em> dentro de la respuesta.</span>
+  </div>
+
+  <hr class="section-sep">
+
+  <!-- Índice -->
+  <div class="toc">
+    <h3>Índice de endpoints</h3>
+    <ol>
+      <li><a href="#get-all">GET /api/personas</a> — Listar personas con filtros y paginación</li>
+      <li><a href="#get-by-id">GET /api/personas/{id}</a> — Consultar detalle completo de una persona</li>
+      <li><a href="#delete">DELETE /api/personas/{id}</a> — Eliminar (desactivar) una ficha</li>
+      <li><a href="#publicar">POST /api/personas/{id}/publicar</a> — Publicar manualmente en Facebook</li>
+      <li><a href="#cargar-pdf">POST /api/personas/cargar-pdf-manual</a> — Cargar un PDF de ficha oficial manualmente</li>
+    </ol>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- ENDPOINT 1 — GET /api/personas -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="endpoint" id="get-all">
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="endpoint-route">/api/personas</span>
+      <span class="access-badge access-public">Público</span>
+      <span class="endpoint-title">Listar personas con filtros y paginación</span>
+    </div>
+    <div class="endpoint-body">
+
+      <p class="section-label">¿Para qué sirve?</p>
+      <p class="desc">
+        Devuelve una lista paginada de personas desaparecidas registradas en el sistema. Es el endpoint principal del portal público: alimenta la pantalla de búsqueda donde cualquier visitante puede buscar por nombre, folio, lugar o fecha. No requiere autenticación.
+      </p>
+
+      <p class="section-label">Parámetros de entrada (URL query string)</p>
+      <table class="param-table">
+        <thead>
+          <tr><th>Parámetro</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="param-name">folio</td>
+            <td class="param-type">texto</td>
+            <td class="param-opt">Opcional</td>
+            <td>Folio Único de Identificación (FUI). Búsqueda parcial o exacta.</td>
+          </tr>
+          <tr>
+            <td class="param-name">nombre</td>
+            <td class="param-type">texto</td>
+            <td class="param-opt">Opcional</td>
+            <td>Nombre de la persona. Permite búsqueda parcial (contiene).</td>
+          </tr>
+          <tr>
+            <td class="param-name">estado</td>
+            <td class="param-type">texto</td>
+            <td class="param-opt">Opcional</td>
+            <td>Estado de procesamiento del registro: <em>completo</em> o <em>incompleto</em>.</td>
+          </tr>
+          <tr>
+            <td class="param-name">fechaHechos</td>
+            <td class="param-type">fecha (yyyy-MM-dd)</td>
+            <td class="param-opt">Opcional</td>
+            <td>Filtra por la fecha en que ocurrió la desaparición.</td>
+          </tr>
+          <tr>
+            <td class="param-name">busqueda</td>
+            <td class="param-type">texto</td>
+            <td class="param-opt">Opcional</td>
+            <td>Búsqueda libre que cruza nombre, lugar de hechos y características físicas.</td>
+          </tr>
+          <tr>
+            <td class="param-name">pagina</td>
+            <td class="param-type">número entero</td>
+            <td class="param-opt">Opcional (default: 1)</td>
+            <td>Número de página para la paginación.</td>
+          </tr>
+          <tr>
+            <td class="param-name">tamanioPagina</td>
+            <td class="param-type">número entero</td>
+            <td class="param-opt">Opcional (default: 20)</td>
+            <td>Cantidad de registros por página.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="section-label">Flujo paso a paso</p>
+      <ol class="flow">
+        <li><span class="step-text"><strong>El controlador recibe la solicitud</strong> y pasa directamente todos los filtros y valores de paginación al servicio. No realiza validaciones adicionales en este punto.</span></li>
+        <li><span class="step-text"><strong>El servicio consulta la base de datos</strong> a través del repositorio de PersonaDesaparecida. La consulta aplica los filtros indicados directamente en SQL Server para no cargar registros innecesarios en memoria.</span></li>
+        <li><span class="step-text"><strong>La base de datos devuelve dos valores:</strong> la lista de personas de la página solicitada y el total de registros que coinciden con los filtros.</span></li>
+        <li><span class="step-text"><strong>El servicio construye la respuesta paginada</strong> que incluye: los registros de la página actual, el total de registros encontrados, el número de página actual y el tamaño de página usado.
+          <span class="note">Cada registro incluye los datos de resumen: nombre, FUI, edad, lugar de hechos, fecha, estado de procesamiento y si ya fue publicado en Facebook.</span>
+        </span></li>
+        <li><span class="step-text"><strong>Devuelve la respuesta al cliente</strong> con <em>success: true</em> y la lista paginada en el campo <em>data</em>.</span></li>
+      </ol>
+
+      <p class="section-label">Servicios que consume</p>
+      <div class="services-list">
+        <span class="service-tag">PersonaDesaparecidaService</span>
+        <span class="service-tag">PersonaDesaparecidaRepository</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Tablas de base de datos involucradas</p>
+      <div class="db-table">
+        <span class="db-tag">persona_desaparecida (lectura)</span>
+        <span class="db-tag">foto_persona (no en esta consulta)</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Qué devuelve</p>
+      <div class="response-box">
+        <div class="field"><span>datos</span> — Lista de personas (resumen). Cada una incluye: id, nombre, FUI, edad, sexo, lugar de hechos, fecha de hechos, estado de procesamiento, flag de publicado en Facebook, ruta de foto principal.</div>
+        <div class="field"><span>totalRegistros</span> — Total de personas que coinciden con los filtros (para calcular páginas).</div>
+        <div class="field"><span>pagina</span> — Página actual devuelta.</div>
+        <div class="field"><span>tamanioPagina</span> — Registros por página usados.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- ENDPOINT 2 — GET /api/personas/{id} -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="endpoint" id="get-by-id">
+    <div class="endpoint-header">
+      <span class="method get">GET</span>
+      <span class="endpoint-route">/api/personas/{id}</span>
+      <span class="access-badge access-public">Público</span>
+      <span class="endpoint-title">Consultar detalle de una persona</span>
+    </div>
+    <div class="endpoint-body">
+
+      <p class="section-label">¿Para qué sirve?</p>
+      <p class="desc">
+        Devuelve todos los datos completos de una persona desaparecida específica, incluyendo sus fotos. Es el endpoint que alimenta la pantalla de detalle del portal cuando el visitante hace clic en "Ver más" desde la lista. Tampoco requiere autenticación.
+      </p>
+
+      <p class="section-label">Parámetros de entrada</p>
+      <table class="param-table">
+        <thead>
+          <tr><th>Parámetro</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="param-name">id</td>
+            <td class="param-type">número entero (long)</td>
+            <td class="param-req">Requerido</td>
+            <td>Identificador único numérico de la persona en el sistema. Va en la URL.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="section-label">Flujo paso a paso</p>
+      <ol class="flow">
+        <li><span class="step-text"><strong>El controlador recibe el ID</strong> desde la URL y lo entrega directamente al servicio.</span></li>
+        <li><span class="step-text"><strong>El servicio busca en base de datos</strong> la persona con ese ID. La consulta incluye también sus fotos asociadas en la misma operación (join).</span></li>
+        <li><span class="step-text"><strong>Si la persona no existe</strong> (o está desactivada), el servicio devuelve una respuesta de error con código 404 y el mensaje "Persona desaparecida no encontrada". El HTTP sigue siendo 200.</span></li>
+        <li><span class="step-text"><strong>Si existe, construye la respuesta de detalle completa</strong> con todos los campos extraídos del PDF y la lista de fotos asociadas.</span></li>
+        <li><span class="step-text"><strong>Devuelve la respuesta</strong> con <em>success: true</em> y los datos completos en el campo <em>data</em>.</span></li>
+      </ol>
+
+      <p class="section-label">Servicios que consume</p>
+      <div class="services-list">
+        <span class="service-tag">PersonaDesaparecidaService</span>
+        <span class="service-tag">PersonaDesaparecidaRepository</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Tablas de base de datos involucradas</p>
+      <div class="db-table">
+        <span class="db-tag">persona_desaparecida (lectura)</span>
+        <span class="db-tag">foto_persona (lectura)</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Qué devuelve</p>
+      <div class="response-box">
+        <div class="field"><span>data</span> — Objeto completo con todos los campos: nombre, FUI, edad actual, edad al momento, sexo, género, nacionalidad, lugar de nacimiento, lugar de hechos, fecha de hechos, fecha de percatamiento, características físicas, señas particulares, prendas de vestir, autoridades competentes, carpeta de investigación, idioma, discapacidad, estado de procesamiento, campos incompletos, flag de publicado en Facebook, fecha de publicación, y lista de fotos con sus rutas en disco.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- ENDPOINT 3 — DELETE /api/personas/{id} -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="endpoint" id="delete">
+    <div class="endpoint-header">
+      <span class="method delete">DELETE</span>
+      <span class="endpoint-route">/api/personas/{id}</span>
+      <span class="access-badge access-private">Solo admin</span>
+      <span class="endpoint-title">Desactivar una ficha del sistema</span>
+    </div>
+    <div class="endpoint-body">
+
+      <p class="section-label">¿Para qué sirve?</p>
+      <p class="desc">
+        Elimina lógicamente una ficha de persona desaparecida del sistema. La eliminación <strong>no borra el registro de la base de datos</strong>; simplemente lo marca como inactivo para que deje de aparecer en las consultas del portal. Este diseño preserva la trazabilidad histórica y permite auditorías.
+      </p>
+
+      <div class="alert alert-warn" style="margin-bottom:0; margin-top:8px;">
+        <span class="alert-icon">⚠️</span>
+        <span>Este endpoint requiere autenticación de administrador. Actualmente el sistema tiene la autenticación comentada durante la fase de desarrollo. Antes de salir a producción se debe habilitar el atributo <em>[Authorize]</em> en el controlador.</span>
+      </div>
+
+      <p class="section-label" style="margin-top:20px;">Parámetros de entrada</p>
+      <table class="param-table">
+        <thead>
+          <tr><th>Parámetro</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="param-name">id</td>
+            <td class="param-type">número entero (long)</td>
+            <td class="param-req">Requerido</td>
+            <td>Identificador único de la persona a desactivar. Va en la URL.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="section-label">Flujo paso a paso</p>
+      <ol class="flow">
+        <li><span class="step-text"><strong>El controlador recibe el ID</strong> y lo pasa al servicio sin procesar nada adicional.</span></li>
+        <li><span class="step-text"><strong>El servicio busca la persona</strong> en base de datos por su ID.</span></li>
+        <li><span class="step-text"><strong>Si no existe</strong>, devuelve error con código 404. El registro HTTP sigue siendo 200.</span></li>
+        <li><span class="step-text"><strong>Si existe, realiza el soft delete:</strong>
+          <ul class="sub-flow">
+            <li>Pone el campo <strong>Activo</strong> en <em>false</em>.</li>
+            <li>Actualiza el campo <strong>FechaActualizacion</strong> con la fecha y hora actual (UTC).</li>
+          </ul>
+        </span></li>
+        <li><span class="step-text"><strong>Guarda los cambios</strong> en base de datos.</span></li>
+        <li><span class="step-text"><strong>Devuelve confirmación</strong> con <em>success: true</em> y el mensaje "Persona eliminada correctamente".</span></li>
+      </ol>
+
+      <div class="alert alert-info" style="margin-top:8px;">
+        <span class="alert-icon">ℹ️</span>
+        <span>La persona sigue existiendo en la base de datos. Su historial de correos, archivos y bitácora permanece intacto. Solo deja de ser visible en el portal y en futuras publicaciones de Facebook.</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Servicios que consume</p>
+      <div class="services-list">
+        <span class="service-tag">PersonaDesaparecidaService</span>
+        <span class="service-tag">PersonaDesaparecidaRepository</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Tablas de base de datos involucradas</p>
+      <div class="db-table">
+        <span class="db-tag">persona_desaparecida (lectura + escritura)</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Qué devuelve</p>
+      <div class="response-box">
+        <div class="field"><span>success</span> — true si se desactivó correctamente, false si no se encontró.</div>
+        <div class="field"><span>message</span> — "Persona eliminada correctamente" o mensaje de error.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- ENDPOINT 4 — POST /api/personas/{id}/publicar -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="endpoint" id="publicar">
+    <div class="endpoint-header">
+      <span class="method post">POST</span>
+      <span class="endpoint-route">/api/personas/{id}/publicar</span>
+      <span class="access-badge access-private">Solo admin</span>
+      <span class="endpoint-title">Publicar manualmente en Facebook</span>
+    </div>
+    <div class="endpoint-body">
+
+      <p class="section-label">¿Para qué sirve?</p>
+      <p class="desc">
+        Permite que un administrador publique manualmente la ficha de una persona desaparecida en la página de Facebook del sistema, sin esperar al job automático nocturno. Se usa cuando se quiere dar difusión urgente o cuando el scheduler no ha podido publicarla.
+      </p>
+
+      <div class="alert alert-warn" style="margin-bottom:0; margin-top:8px;">
+        <span class="alert-icon">⚠️</span>
+        <span>Este endpoint requiere autenticación de administrador. Igual que el DELETE, la autenticación está comentada en la fase de desarrollo.</span>
+      </div>
+
+      <p class="section-label" style="margin-top:20px;">Parámetros de entrada</p>
+      <table class="param-table">
+        <thead>
+          <tr><th>Parámetro</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="param-name">id</td>
+            <td class="param-type">número entero (long)</td>
+            <td class="param-req">Requerido</td>
+            <td>Identificador único de la persona a publicar. Va en la URL.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="desc" style="margin-top:8px; font-size:13px; color:#555;">No requiere cuerpo (body) en la solicitud. Solo el ID en la URL.</p>
+
+      <p class="section-label">Flujo paso a paso</p>
+      <ol class="flow">
+        <li><span class="step-text"><strong>El controlador recibe el ID</strong> y lo entrega al servicio de personas.</span></li>
+        <li><span class="step-text"><strong>El servicio de personas verifica que la persona exista.</strong> Si no existe, regresa error 404.</span></li>
+        <li><span class="step-text"><strong>Delega la publicación al servicio de Facebook</strong> indicando que el tipo de publicación es "manual" (a diferencia del tipo "automatica" que usa el scheduler).</span></li>
+        <li><span class="step-text"><strong>El servicio de Facebook verifica</strong> que la persona no haya sido publicada ya. Si su flag de publicada es <em>true</em> y el tipo es "manual", regresa error inmediatamente para evitar duplicados en la página.</span></li>
+        <li><span class="step-text"><strong>Verifica las credenciales de Facebook</strong> en la configuración (PageId y AccessToken). Si faltan, regresa error de configuración.</span></li>
+        <li><span class="step-text"><strong>Lee el texto de información de contacto</strong> desde la tabla de configuración del sistema para incluirlo al pie de la publicación.</span></li>
+        <li><span class="step-text"><strong>Construye el texto (caption) de la publicación</strong> con este formato:
+          <ul class="sub-flow">
+            <li>Encabezado: "🔴 ALERTA DE PERSONA DESAPARECIDA"</li>
+            <li>Nombre completo</li>
+            <li>Edad (si está disponible)</li>
+            <li>Lugar de la desaparición (si está disponible)</li>
+            <li>Fecha de la desaparición (si está disponible)</li>
+            <li>Número de carpeta de investigación (si está disponible)</li>
+            <li>Texto de información de contacto</li>
+          </ul>
+        </span></li>
+        <li><span class="step-text"><strong>Incrementa el contador de intentos</strong> de publicación en el registro de la persona.</span></li>
+        <li><span class="step-text"><strong>Intenta publicar en la API de Meta (Facebook Graph API):</strong>
+          <ul class="sub-flow">
+            <li>Si la persona <strong>tiene foto</strong> en disco → publica usando el endpoint de fotos de Facebook (<code>/photos</code>), que sube la imagen y el caption juntos.</li>
+            <li>Si la persona <strong>no tiene foto</strong> → publica usando el endpoint de texto (<code>/feed</code>) con solo el caption.</li>
+          </ul>
+        </span></li>
+        <li><span class="step-text"><strong>Registra el intento en la bitácora de publicaciones</strong> independientemente de si tuvo éxito o falló. Guarda: la persona, la red social, el tipo (manual), el estado (exitosa/fallida), el ID del post en Facebook si fue exitosa, o el mensaje de error si falló.</span></li>
+        <li><span class="step-text"><strong>Si la publicación fue exitosa:</strong>
+          <ul class="sub-flow">
+            <li>Actualiza el flag <strong>FlagPublicadoFacebook</strong> a <em>true</em> en la base de datos.</li>
+            <li>Guarda la <strong>FechaPublicacionFacebook</strong> con la fecha actual.</li>
+            <li>Devuelve confirmación con el ID del post generado en Facebook.</li>
+          </ul>
+        </span></li>
+        <li><span class="step-text"><strong>Si falló:</strong> actualiza la fecha de modificación y devuelve error con el detalle del problema (error de red, token vencido, etc.).</span></li>
+      </ol>
+
+      <p class="section-label">Servicios que consume</p>
+      <div class="services-list">
+        <span class="service-tag">PersonaDesaparecidaService</span>
+        <span class="service-tag">PersonaDesaparecidaRepository</span>
+        <span class="service-tag">PublicacionFacebookService</span>
+        <span class="service-tag">FacebookGraphClient (HTTP)</span>
+        <span class="service-tag">ConfiguracionSistemaRepository</span>
+        <span class="service-tag">BitacoraPublicacionRepository</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Tablas de base de datos involucradas</p>
+      <div class="db-table">
+        <span class="db-tag">persona_desaparecida (lectura + escritura)</span>
+        <span class="db-tag">foto_persona (lectura)</span>
+        <span class="db-tag">bitacora_publicacion (escritura)</span>
+        <span class="db-tag">configuracion_sistema (lectura)</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Servicio externo que llama</p>
+      <div class="db-table" style="margin-bottom:0;">
+        <span class="db-tag" style="background:#e8eaf6; border-color:#9fa8da; color:#283593;">Meta Graph API — graph.facebook.com</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Qué devuelve</p>
+      <div class="response-box">
+        <div class="field"><span>success: true</span> — "Publicación exitosa en Facebook" + objeto <em>data</em> con el campo <em>idPublicacion</em> (ID del post generado en la página de Facebook).</div>
+        <div class="field"><span>success: false</span> — Mensaje de error descriptivo: "ya fue publicada", "configuración incompleta", o detalle del error de la API de Meta.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- ENDPOINT 5 — POST /api/personas/cargar-pdf-manual -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="endpoint" id="cargar-pdf">
+    <div class="endpoint-header">
+      <span class="method post">POST</span>
+      <span class="endpoint-route">/api/personas/cargar-pdf-manual</span>
+      <span class="access-badge access-private">Solo admin</span>
+      <span class="endpoint-title">Cargar una ficha oficial en PDF manualmente</span>
+    </div>
+    <div class="endpoint-body">
+
+      <p class="section-label">¿Para qué sirve?</p>
+      <p class="desc">
+        Permite registrar una nueva persona desaparecida en el sistema subiendo directamente el PDF de la ficha oficial del gobierno, sin necesidad de que llegue por correo electrónico. Activa exactamente el mismo proceso de extracción de datos que el flujo automático (Regex + OpenAI como respaldo), pero se puede iniciar desde el portal administrativo en cualquier momento.
+      </p>
+
+      <p class="section-label">Parámetros de entrada</p>
+      <table class="param-table">
+        <thead>
+          <tr><th>Parámetro</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="param-name">archivo</td>
+            <td class="param-type">archivo (multipart/form-data)</td>
+            <td class="param-req">Requerido</td>
+            <td>El archivo PDF de la ficha oficial. Debe ser tipo PDF y no superar 10 MB.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="section-label">Validaciones que realiza el controlador</p>
+      <ol class="flow" style="counter-reset: step;">
+        <li><span class="step-text"><strong>¿Se recibió un archivo?</strong> Si no se envió ningún archivo o está vacío, regresa error inmediatamente con el mensaje "No se recibió ningún archivo."</span></li>
+        <li><span class="step-text"><strong>¿Es un PDF?</strong> Verifica tanto el tipo de contenido (Content-Type) como la extensión del nombre del archivo. Si no es PDF, regresa error "Solo se aceptan archivos PDF."</span></li>
+        <li><span class="step-text"><strong>¿Pesa menos de 10 MB?</strong> Si supera el límite, regresa error "El archivo supera el límite de 10 MB."</span></li>
+      </ol>
+
+      <p class="section-label">Flujo completo paso a paso (si pasa las validaciones)</p>
+      <ol class="flow">
+        <li><span class="step-text"><strong>El controlador convierte el archivo</strong> a un arreglo de bytes en memoria. Esto es necesario porque el servicio de negocio no puede acceder directamente a archivos HTTP; el controlador hace esta traducción antes de delegar.</span></li>
+        <li><span class="step-text"><strong>Entrega los bytes y el nombre del archivo al servicio de carga manual</strong>, que a partir de aquí ejecuta todo el proceso.</span></li>
+        <li><span class="step-text"><strong>Consulta la configuración del sistema</strong> para obtener las rutas donde se guardarán el PDF y las fotos extraídas.
+          <span class="note">Usa las claves <em>ruta_almacenamiento_pdfs</em> y <em>ruta_almacenamiento_fotos</em> de la tabla de configuración. Si no existen, usa valores por defecto.</span>
+        </span></li>
+        <li><span class="step-text"><strong>Guarda el PDF en disco</strong> con un nombre único: <em>MANUAL_[fecha y hora]_[nombre original].pdf</em>. Si la carpeta no existe, la crea automáticamente. Si no puede guardar (por permisos o espacio), regresa error en este punto.</span></li>
+        <li><span class="step-text"><strong>Crea un registro de correo sintético en la base de datos</strong> para mantener la misma estructura de trazabilidad que el flujo automático.
+          <ul class="sub-flow">
+            <li>Asigna un identificador único con el prefijo <strong>MANUAL-</strong> seguido de un código aleatorio.</li>
+            <li>El remitente queda registrado como <strong>"carga-manual"</strong>.</li>
+            <li>El estado inicial del correo queda en <em>"pendiente"</em>.</li>
+          </ul>
+        </span></li>
+        <li><span class="step-text"><strong>Crea un registro de archivo de correo</strong> vinculado al correo sintético, con la ruta del PDF guardado en disco, el tamaño y el tipo de contenido.</span></li>
+        <li><span class="step-text"><strong>Extrae el texto del PDF</strong> usando la librería PdfPig, que lee las palabras del documento en el orden en que aparecen.</span></li>
+        <li><span class="step-text"><strong>Aplica extracción por expresiones regulares</strong> sobre el texto extraído para identificar los 14 campos estructurados de la ficha: nombre, FUI, edad, sexo, lugar, fechas, características físicas, carpeta de investigación, etc.
+          <span class="note">Si todos los campos se extraen correctamente, el proceso no necesita conectarse a ningún servicio externo.</span>
+        </span></li>
+        <li><span class="step-text"><strong>Si faltan campos</strong> después de la extracción por regex, activa el respaldo con inteligencia artificial:
+          <ul class="sub-flow">
+            <li>Envía el texto completo del PDF al modelo <strong>GPT-4o-mini de OpenAI</strong>.</li>
+            <li>Le indica exactamente cuáles son los campos faltantes para que intente completarlos.</li>
+            <li>Combina lo que extrajo el regex con lo que completó la IA.</li>
+          </ul>
+        </span></li>
+        <li><span class="step-text"><strong>Verifica los campos mínimos obligatorios:</strong> si el <strong>FUI</strong> (Folio Único de Identificación) o el <strong>Nombre</strong> no pudieron extraerse por ningún medio, el proceso se detiene.
+          <ul class="sub-flow">
+            <li>Marca el correo sintético con estado <em>"error"</em> en base de datos.</li>
+            <li>Registra el error en la bitácora general.</li>
+            <li>Devuelve error explicando que el PDF no parece ser una ficha oficial válida.</li>
+          </ul>
+        </span></li>
+        <li><span class="step-text"><strong>Determina el estado de la extracción:</strong>
+          <ul class="sub-flow">
+            <li>Si todos los campos están completos → estado <em>"completo"</em>.</li>
+            <li>Si aún faltan campos aunque se usó IA → estado <em>"incompleto"</em>.</li>
+          </ul>
+        </span></li>
+        <li><span class="step-text"><strong>Guarda el nuevo registro de persona desaparecida</strong> en la base de datos con todos los campos extraídos, el estado de procesamiento y la fecha de creación.</span></li>
+        <li><span class="step-text"><strong>Intenta extraer y guardar la foto de la ficha:</strong>
+          <ul class="sub-flow">
+            <li>Busca imágenes embebidas dentro del PDF.</li>
+            <li>Si encuentra una, la guarda en disco con el FUI como nombre de archivo.</li>
+            <li>Registra la foto en base de datos vinculada a la persona, marcándola como foto principal.</li>
+            <li>Si no hay foto o falla la extracción, continúa sin interrumpir el proceso (solo registra una advertencia interna).</li>
+          </ul>
+        </span></li>
+        <li><span class="step-text"><strong>Actualiza el estado del correo sintético</strong> con el resultado final (completo o incompleto) y la fecha de procesamiento.</span></li>
+        <li><span class="step-text"><strong>Registra la operación en la bitácora general</strong> con el tipo "CARGA_PDF_MANUAL", el estado, el FUI encontrado, y los IDs del correo y la persona creada.</span></li>
+        <li><span class="step-text"><strong>Devuelve la respuesta al portal</strong> con los datos de lo que se creó: ID asignado, nombre, FUI, estado de la extracción y lista de campos que quedaron incompletos (si los hay).</span></li>
+      </ol>
+
+      <p class="section-label">Servicios que consume</p>
+      <div class="services-list">
+        <span class="service-tag">CargaPdfManualService</span>
+        <span class="service-tag">PdfExtractorService</span>
+        <span class="service-tag">RegexExtractorService</span>
+        <span class="service-tag">OpenAiExtractorService</span>
+        <span class="service-tag">CorreoRawRepository</span>
+        <span class="service-tag">ArchivoCorreoRepository</span>
+        <span class="service-tag">PersonaDesaparecidaRepository</span>
+        <span class="service-tag">FotoPersonaRepository</span>
+        <span class="service-tag">BitacoraGeneralRepository</span>
+        <span class="service-tag">ConfiguracionSistemaRepository</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Servicio externo que puede llamar</p>
+      <div class="db-table" style="margin-bottom:0;">
+        <span class="db-tag" style="background:#e8eaf6; border-color:#9fa8da; color:#283593;">OpenAI API — GPT-4o-mini (solo si faltan campos tras el regex)</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Tablas de base de datos involucradas</p>
+      <div class="db-table">
+        <span class="db-tag">configuracion_sistema (lectura)</span>
+        <span class="db-tag">correo_raw (escritura)</span>
+        <span class="db-tag">archivo_correo (escritura)</span>
+        <span class="db-tag">persona_desaparecida (escritura)</span>
+        <span class="db-tag">foto_persona (escritura)</span>
+        <span class="db-tag">bitacora_general (escritura)</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Archivos que crea en disco</p>
+      <div class="db-table">
+        <span class="db-tag" style="background:#e8f5e9; border-color:#a5d6a7; color:#1b5e20;">PDF de la ficha (carpeta ruta_almacenamiento_pdfs)</span>
+        <span class="db-tag" style="background:#e8f5e9; border-color:#a5d6a7; color:#1b5e20;">Foto extraída del PDF (carpeta ruta_almacenamiento_fotos, solo si existe)</span>
+      </div>
+
+      <p class="section-label" style="margin-top:16px;">Qué devuelve</p>
+      <div class="response-box">
+        <div class="field" style="margin-bottom:8px;"><strong>En caso de éxito (success: true):</strong></div>
+        <div class="field"><span>idPersonaDesaparecida</span> — ID numérico asignado al nuevo registro en el sistema.</div>
+        <div class="field"><span>nombre</span> — Nombre extraído del PDF.</div>
+        <div class="field"><span>folioUnicoIdentificacion</span> — FUI extraído del PDF.</div>
+        <div class="field"><span>estado</span> — "completo" si se extrajeron todos los campos, "incompleto" si faltaron algunos.</div>
+        <div class="field"><span>camposIncompletos</span> — Lista de los nombres de los campos que no se pudieron extraer (vacía si estado es "completo").</div>
+        <div class="field" style="margin-top:12px; padding-top:12px; border-top:1px solid #dce775;"><strong>En caso de error (success: false):</strong> mensaje descriptivo del problema (archivo no guardable, PDF no válido, o FUI/Nombre no extraíbles).</div>
+      </div>
+
+      <div class="alert alert-error" style="margin-top:16px;">
+        <span class="alert-icon">🚫</span>
+        <span>Si el PDF no contiene el Folio Único de Identificación o el Nombre legibles (campos obligatorios en base de datos), el sistema <strong>no guarda ningún registro de persona</strong>. Solo queda el registro de correo sintético con estado "error" y la entrada en bitácora. El archivo PDF sí permanece en disco.</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <span>Sistema PUI — Universidad Iberoamericana · Documentación interna</span>
+    <span>PersonasController · API ASP.NET Core 10 · Mayo 2026</span>
+  </div>
+
+</div>
+</body>
+</html>

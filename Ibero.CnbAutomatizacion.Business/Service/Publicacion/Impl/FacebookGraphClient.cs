@@ -1,18 +1,34 @@
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace Ibero.CnbAutomatizacion.Business.Service.Publicacion.Impl;
 
 public class FacebookGraphClient(HttpClient httpClient) : IFacebookGraphClient
 {
-    public async Task<string?> PublicarFotoAsync(string pageId, string accessToken, byte[] fotoBytes, string caption)
+    public async Task<string?> PublicarFotoAsync(
+      string pageId,
+      string accessToken,
+      byte[] fotoBytes,
+      string caption)
     {
         using var content = new MultipartFormDataContent();
-        content.Add(new StringContent(accessToken), "access_token");
-        content.Add(new StringContent(caption), "caption");
-        content.Add(new ByteArrayContent(fotoBytes), "source", "foto.jpg");
+        var debugUrl = $"https://graph.facebook.com/debug_token?input_token={accessToken}&access_token={accessToken}";
+        var debug = await httpClient.GetStringAsync(debugUrl);
 
+        // ✅ Campo correcto es "message", no "caption"
+        content.Add(new StringContent(accessToken), "access_token");
+        content.Add(new StringContent(caption), "message");
+
+        // ✅ ByteArrayContent necesita ContentType explícito
+        var imageContent = new ByteArrayContent(fotoBytes);
+        imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+        content.Add(imageContent, "source", "foto.jpg");
+
+        // ✅ BaseAddress ya tiene https://graph.facebook.com/
+        //    La ruta relativa NO debe empezar con "/"
         var response = await httpClient.PostAsync($"v19.0/{pageId}/photos", content);
+
         return await ExtraerIdAsync(response);
     }
 

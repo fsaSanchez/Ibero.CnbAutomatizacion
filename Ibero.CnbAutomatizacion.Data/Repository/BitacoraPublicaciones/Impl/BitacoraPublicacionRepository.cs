@@ -30,7 +30,7 @@ public class BitacoraPublicacionRepository : IBitacoraPublicacionRepository
 
     public async Task<bool> HuboPublicacionExitosaHoyAsync()
     {
-        var hoy = DateTime.UtcNow.Date;
+        var hoy = DateTime.Now.Date;
         return await _context.BitacoraPublicacions
             .AsNoTracking()
             .AnyAsync(x => x.FechaIntento.Date == hoy && x.EstadoPublicacion == "exitosa");

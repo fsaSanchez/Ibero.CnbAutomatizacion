@@ -18,6 +18,8 @@ export default function PersonaDetallePage() {
   const [persona, setPersona] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [fotoPrincipal, setFotoPrincipal] = useState(null)
+  const [loadingFoto, setLoadingFoto] = useState(false)
 
   useEffect(() => {
     fetch(API.personaById(id))
@@ -32,6 +34,21 @@ export default function PersonaDetallePage() {
       .catch(e => setError(e.message))
       .finally(() => setLoading(false))
   }, [id])
+
+  useEffect(() => {
+    if (!persona?.rutaFotoPrincipal) return
+    setLoadingFoto(true)
+    fetch(API.archivo(persona.rutaFotoPrincipal))
+      .then(r => r.json())
+      .then(json => {
+        if (json.success) {
+          const { base64, contentType } = json.data
+          setFotoPrincipal(`data:${contentType};base64,${base64}`)
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingFoto(false))
+  }, [persona?.rutaFotoPrincipal])
 
   if (loading) return <div className="text-center py-20 text-gray-500">Cargando...</div>
   if (error) return (
@@ -56,12 +73,16 @@ export default function PersonaDetallePage() {
 
         <div className="p-6 sm:flex gap-6">
           <div className="sm:w-48 shrink-0 mb-4 sm:mb-0">
-            {persona.rutaFotoPrincipal ? (
+            {fotoPrincipal ? (
               <img
-                src={persona.rutaFotoPrincipal}
+                src={fotoPrincipal}
                 alt={persona.nombre}
                 className="w-full aspect-square object-cover rounded-lg"
               />
+            ) : loadingFoto ? (
+              <div className="w-full aspect-square rounded-lg bg-gray-100 flex items-center justify-center">
+                <span className="text-sm text-gray-400">Cargando imagen...</span>
+              </div>
             ) : (
               <div className="w-full aspect-square rounded-lg bg-gray-100 flex items-center justify-center">
                 <span className="text-4xl font-bold text-gray-400">

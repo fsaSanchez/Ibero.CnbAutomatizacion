@@ -34,7 +34,7 @@ public class CargaPdfManualService(
         try
         {
             if (!Directory.Exists(rutaPdfs)) Directory.CreateDirectory(rutaPdfs);
-            var nombre = $"MANUAL_{DateTime.UtcNow:yyyyMMddHHmmss}_{Path.GetFileNameWithoutExtension(nombreArchivo).Replace(" ", "_")}.pdf";
+            var nombre = $"MANUAL_{DateTime.Now:yyyyMMddHHmmss}_{Path.GetFileNameWithoutExtension(nombreArchivo).Replace(" ", "_")}.pdf";
             rutaCompleta = Path.Combine(rutaPdfs, nombre);
             await File.WriteAllBytesAsync(rutaCompleta, pdfBytes);
         }
@@ -52,11 +52,11 @@ public class CargaPdfManualService(
             Remitente           = "carga-manual",
             Destinatario        = "pui@ibero.mx",
             CuerpoCorreo        = "PDF cargado manualmente desde el portal administrativo.",
-            FechaRecepcion      = DateTime.UtcNow,
+            FechaRecepcion      = DateTime.Now,
             EstadoProcesamiento = "pendiente",
             Reintentos          = 0,
-            FechaCreacion       = DateTime.UtcNow,
-            FechaActualizacion  = DateTime.UtcNow,
+            FechaCreacion       = DateTime.Now,
+            FechaActualizacion  = DateTime.Now,
             Activo              = true
         };
         await correoRawRepo.AddAsync(correoRaw);
@@ -69,8 +69,8 @@ public class CargaPdfManualService(
             RutaDisco          = rutaCompleta,
             TamanoBytes        = pdfBytes.Length,
             TipoContenido      = "application/pdf",
-            FechaCreacion      = DateTime.UtcNow,
-            FechaActualizacion = DateTime.UtcNow,
+            FechaCreacion      = DateTime.Now,
+            FechaActualizacion = DateTime.Now,
             Activo             = true
         });
 
@@ -119,8 +119,8 @@ public class CargaPdfManualService(
                 CamposIncompletos         = ficha.CamposIncompletos.Count > 0 ? string.Join(",", ficha.CamposIncompletos) : null,
                 FlagPublicadoFacebook     = false,
                 IntentoPublicacionFacebook = 0,
-                FechaCreacion             = DateTime.UtcNow,
-                FechaActualizacion        = DateTime.UtcNow,
+                FechaCreacion             = DateTime.Now,
+                FechaActualizacion        = DateTime.Now,
                 Activo                    = true
             };
             await personaRepo.AddAsync(persona);
@@ -129,14 +129,14 @@ public class CargaPdfManualService(
 
             correoRaw.EstadoProcesamiento = estado;
             correoRaw.Reintentos          = 1;
-            correoRaw.FechaProcesamiento  = DateTime.UtcNow;
-            correoRaw.FechaActualizacion  = DateTime.UtcNow;
+            correoRaw.FechaProcesamiento  = DateTime.Now;
+            correoRaw.FechaActualizacion  = DateTime.Now;
             await correoRawRepo.UpdateAsync(correoRaw);
 
             await bitacoraRepo.RegistrarAsync(
                 "CARGA_PDF_MANUAL",
                 $"PDF cargado manualmente ({estado}). FUI: {ficha.FolioUnicoIdentificacion}",
-                "exitoso",
+                "exitosa",
                 idCorreoRaw: correoRaw.IdCorreoRaw,
                 idPersonaDesaparecida: persona.IdPersonaDesaparecida);
 
@@ -167,7 +167,7 @@ public class CargaPdfManualService(
     {
         correoRaw.EstadoProcesamiento = "error";
         correoRaw.MensajeError        = mensajeError;
-        correoRaw.FechaActualizacion  = DateTime.UtcNow;
+        correoRaw.FechaActualizacion  = DateTime.Now;
         await correoRawRepo.UpdateAsync(correoRaw);
         await bitacoraRepo.RegistrarAsync(
             "CARGA_PDF_MANUAL", $"Error en carga manual: {mensajeError}", "error",
@@ -195,8 +195,8 @@ public class CargaPdfManualService(
                 TamanoBytes           = fotoBytes.Length,
                 TipoContenido         = ext == ".png" ? "image/png" : "image/jpeg",
                 Principal             = true,
-                FechaCreacion         = DateTime.UtcNow,
-                FechaActualizacion    = DateTime.UtcNow,
+                FechaCreacion         = DateTime.Now,
+                FechaActualizacion    = DateTime.Now,
                 Activo                = true
             });
         }
