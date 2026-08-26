@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { API } from '../../constants/api'
 import ModalConfirmacion from './ModalConfirmacion'
 
 function Iniciales({ nombre }) {
@@ -15,9 +16,24 @@ function Iniciales({ nombre }) {
 export default function TarjetaPersona({ persona, isAdmin, onEliminar, onPublicar }) {
   const navigate = useNavigate()
   const [modalEliminar, setModalEliminar] = useState(false)
+  const [fotoPrincipal, setFotoPrincipal] = useState(null)
 
   console.log(persona);
-  
+
+
+  useEffect(() => {
+    if (!persona.rutaFotoPrincipal) return
+    let cancelado = false
+    fetch(API.archivo(persona.rutaFotoPrincipal))
+      .then(r => r.json())
+      .then(json => {
+        if (cancelado || !json.success) return
+        const { base64, contentType } = json.data
+        setFotoPrincipal(`data:${contentType};base64,${base64}`)
+      })
+      .catch(() => {})
+    return () => { cancelado = true }
+  }, [persona.rutaFotoPrincipal])
 
   return (
     <>
@@ -26,9 +42,9 @@ export default function TarjetaPersona({ persona, isAdmin, onEliminar, onPublica
         style={{ height: '280px', borderTop: '3px solid #8B0000' }}
       >
         <div className="h-36 overflow-hidden shrink-0">
-          {persona.rutaFotoPrincipal ? (
+          {fotoPrincipal ? (
             <img
-              src={persona.rutaFotoPrincipal}
+              src={fotoPrincipal}
               alt={persona.nombre }
               className="w-full h-full object-cover"
               onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}

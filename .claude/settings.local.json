@@ -24,7 +24,12 @@
       "Bash(sleep 3; cat \"C:/Users/hp-envy/AppData/Local/Temp/vite_run.log\")",
       "Bash(cp \"C:/Datos/PUI/PDFs/23_sergio_medina_juarez.pdf\" \"C:/Users/hp-envy/AppData/Local/Temp/claude/C--Users-hp-envy-Documents-CNB-Ibero-CnbAutomatizacion-Ibero-CnbAutomatizacion/526c2553-3ce7-46cb-bf71-35812d1a9515/scratchpad/test_ficha.pdf\" *)",
       "Bash(taskkill //F //FI \"WINDOWTITLE eq *\" //IM node.exe //T)",
-      "Bash(taskkill //F //IM dotnet.exe //T)"
+      "Bash(taskkill //F //IM dotnet.exe //T)",
+      "Bash(git rebase *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git reset *)",
+      "Bash(git restore *)"
     ]
   }
 }

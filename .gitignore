@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 Ibero.CnbAutomatizacion.API/appsettings.json
+Ibero.CnbAutomatizacion.API/appsettings.local.json
