@@ -13,7 +13,7 @@ export default function Sidebar() {
     }`
 
   return (
-    <aside style={{ backgroundColor: '#8B0000' }} className="w-48 shrink-0 min-h-full p-4 space-y-1">
+    <aside style={{ backgroundColor: '#E00034' }} className="w-48 shrink-0 min-h-full p-4 space-y-1">
       <p className="text-red-200 text-xs uppercase tracking-wider mb-3">Administración</p>
       <NavLink to="/personas" className={linkClass}>Personas</NavLink>
       <NavLink to="/admin/cargar-pdf" className={linkClass}>Cargar PDF</NavLink>

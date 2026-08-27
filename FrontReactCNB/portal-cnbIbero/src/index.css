@@ -1,7 +1,16 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Alverata';
+  src: url('/fonts/alverata.ttf') format('truetype');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --color-ibero: #8B0000;
-  --color-ibero-dark: #6b0000;
-  --color-ibero-light: #a50000;
+  --color-ibero: #E00034;
+  --color-ibero-dark: #8a0021;
+  --color-ibero-light: #ff3d6b;
+  --font-display: 'Alverata', Georgia, 'Times New Roman', serif;
 }

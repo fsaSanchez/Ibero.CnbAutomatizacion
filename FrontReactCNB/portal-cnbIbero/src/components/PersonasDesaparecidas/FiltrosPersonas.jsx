@@ -55,7 +55,7 @@ export default function FiltrosPersonas({ filtros, onChange, onBuscar, onLimpiar
         </button>
         <button
           type="submit"
-          style={{ backgroundColor: '#8B0000' }}
+          style={{ backgroundColor: '#E00034' }}
           className="px-4 py-2 text-sm text-white rounded hover:opacity-90 transition-opacity cursor-pointer"
         >
           Buscar

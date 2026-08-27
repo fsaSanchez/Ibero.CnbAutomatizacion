@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import IberoWordmark from './IberoWordmark'
 
 export default function Header() {
   const { isAdmin, isAuthenticated, user, logout } = useAuth()
@@ -11,14 +12,13 @@ export default function Header() {
   }
 
   return (
-    <header style={{ backgroundColor: '#8B0000' }} className="text-white shadow-md">
+    <header style={{ backgroundColor: '#E00034' }} className="text-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-2">
         <Link to="/personas" className="flex items-center gap-3 no-underline text-white">
-          <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-            <span style={{ color: '#8B0000' }} className="font-bold text-sm">PUI</span>
-          </div>
-          <span className="font-semibold text-lg leading-tight hidden sm:block">
-            Sistema PUI — Alertas IBERO
+          <IberoWordmark className="h-11 w-auto shrink-0" />
+          <span className="w-px h-6 bg-white/30 hidden sm:block" />
+          <span className="font-display font-bold text-lg leading-tight hidden sm:block">
+            Sistema PUI
           </span>
         </Link>
 

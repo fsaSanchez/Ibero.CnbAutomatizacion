@@ -39,7 +39,7 @@ export default function TarjetaPersona({ persona, isAdmin, onEliminar, onPublica
     <>
       <div
         className="bg-white rounded-lg shadow-sm border overflow-hidden flex flex-col"
-        style={{ height: '280px', borderTop: '3px solid #8B0000' }}
+        style={{ height: '280px', borderTop: '3px solid #E00034' }}
       >
         <div className="h-36 overflow-hidden shrink-0">
           {fotoPrincipal ? (
@@ -82,7 +82,7 @@ export default function TarjetaPersona({ persona, isAdmin, onEliminar, onPublica
           <div className="flex gap-1 mt-auto flex-wrap">
             <button
               onClick={() => navigate(`/personas/${persona.idPersonaDesaparecida}`)}
-              style={{ backgroundColor: '#8B0000' }}
+              style={{ backgroundColor: '#E00034' }}
               className="text-xs text-white px-2 py-1 rounded hover:opacity-90 transition-opacity cursor-pointer"
             >
               Ver más

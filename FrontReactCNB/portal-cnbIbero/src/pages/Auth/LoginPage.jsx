@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import IberoWordmark from '../../components/Common/IberoWordmark'
 
 const LOGIN_URL = 'https://solicitudesti.ibero.mx/back/api/Auth/LoginExterno'
 // Valores asignados a "Sistema PUI" en el sistema institucional (solicitudesti.ibero.mx)
@@ -55,18 +56,19 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center flex-1"
-      style={{ background: 'linear-gradient(135deg, #8B0000 0%, #4a0000 100%)' }}
+      className="min-h-screen flex flex-col items-center justify-center flex-1 gap-6 py-10 px-4"
+      style={{ background: 'linear-gradient(135deg, #E00034 0%, #8a0021 100%)' }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-md w-full mx-4">
+      <img
+        src="/brand/rubrica-ibero-blanco.png"
+        alt="Universidad Iberoamericana Tijuana"
+        className="h-44 w-auto drop-shadow-lg"
+      />
+
+      <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-md w-full">
         <div className="text-center space-y-2 mb-6">
-          <div
-            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto text-2xl font-bold text-white"
-            style={{ backgroundColor: '#8B0000' }}
-          >
-            PUI
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800">Iniciar sesión</h1>
+          <IberoWordmark className="h-12 w-auto mx-auto text-gray-800" />
+          <h1 className="text-2xl font-bold font-display text-gray-800">Iniciar sesión</h1>
           <p className="text-gray-500 text-sm">Acceso de administrador — Sistema PUI</p>
         </div>
 
@@ -111,7 +113,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={enviando}
-            style={{ backgroundColor: '#8B0000' }}
+            style={{ backgroundColor: '#E00034' }}
             className="w-full py-2.5 rounded-lg text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50 cursor-pointer transition"
           >
             {enviando ? 'Ingresando...' : 'Ingresar'}

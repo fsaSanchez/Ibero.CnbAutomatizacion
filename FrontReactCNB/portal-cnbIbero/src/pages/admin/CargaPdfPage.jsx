@@ -114,7 +114,7 @@ export default function CargaPdfPage() {
     <div className="flex flex-1">
       <Sidebar />
       <div className="flex-1 max-w-2xl mx-auto px-4 py-6 w-full">
-        <h2 className="text-xl font-bold text-gray-800 mb-1">Cargar PDF manualmente</h2>
+        <h2 className="text-xl font-bold font-display text-gray-800 mb-1">Cargar PDF manualmente</h2>
         <p className="text-sm text-gray-500 mb-6">
           Sube una ficha oficial de búsqueda en PDF para registrarla en el sistema sin necesidad de correo electrónico.
         </p>
@@ -134,7 +134,7 @@ export default function CargaPdfPage() {
                   ? 'border-green-400 bg-green-50'
                   : 'border-gray-300 hover:border-gray-400 bg-gray-50'
               }`}
-              style={dragOver ? { borderColor: '#8B0000' } : {}}
+              style={dragOver ? { borderColor: '#E00034' } : {}}
             >
               <input
                 ref={inputRef}
@@ -156,7 +156,7 @@ export default function CargaPdfPage() {
                   <div className="text-5xl mb-4 text-gray-200">↑</div>
                   <p className="text-sm font-medium text-gray-600">
                     Arrastra el PDF aquí o{' '}
-                    <span style={{ color: '#8B0000' }} className="font-semibold">haz clic para seleccionar</span>
+                    <span style={{ color: '#E00034' }} className="font-semibold">haz clic para seleccionar</span>
                   </p>
                   <p className="text-xs text-gray-400 mt-2">Solo archivos PDF · Máximo 10 MB</p>
                 </>
@@ -171,7 +171,7 @@ export default function CargaPdfPage() {
               <button
                 onClick={handleProcesar}
                 disabled={!archivo || procesando}
-                style={archivo && !procesando ? { backgroundColor: '#8B0000' } : {}}
+                style={archivo && !procesando ? { backgroundColor: '#E00034' } : {}}
                 className="px-6 py-2.5 text-sm font-semibold text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed hover:opacity-90 transition cursor-pointer"
               >
                 {procesando ? 'Procesando...' : 'Procesar PDF'}
@@ -190,7 +190,7 @@ export default function CargaPdfPage() {
               <div className="mt-6 flex items-center gap-3 text-sm text-gray-500">
                 <div
                   className="w-5 h-5 border-2 border-gray-200 border-t-red-800 rounded-full animate-spin shrink-0"
-                  style={{ borderTopColor: '#8B0000' }}
+                  style={{ borderTopColor: '#E00034' }}
                 />
                 Extrayendo datos del PDF… esto puede tardar unos segundos si se usa el fallback de IA.
               </div>
@@ -238,7 +238,7 @@ export default function CargaPdfPage() {
             <div className="flex gap-3 mt-5">
               <button
                 onClick={resetear}
-                style={{ borderColor: '#8B0000', color: '#8B0000' }}
+                style={{ borderColor: '#E00034', color: '#E00034' }}
                 className="text-xs border rounded-lg px-4 py-2 hover:bg-red-50 cursor-pointer font-medium"
               >
                 Cargar otro PDF
@@ -246,7 +246,7 @@ export default function CargaPdfPage() {
               {resultado.success && resultado.data && (
                 <a
                   href={`/personas/${resultado.data.idPersonaDesaparecida}`}
-                  style={{ backgroundColor: '#8B0000' }}
+                  style={{ backgroundColor: '#E00034' }}
                   className="text-xs text-white rounded-lg px-4 py-2 hover:opacity-90 cursor-pointer font-medium inline-flex items-center"
                 >
                   Ver ficha →
@@ -283,7 +283,7 @@ export default function CargaPdfPage() {
                 <button
                   onClick={handleAnalizarIndice}
                   disabled={!archivoIndice || analizando}
-                  style={archivoIndice && !analizando ? { backgroundColor: '#8B0000' } : {}}
+                  style={archivoIndice && !analizando ? { backgroundColor: '#E00034' } : {}}
                   className="px-4 py-2 text-xs font-semibold text-white rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed hover:opacity-90 transition cursor-pointer"
                 >
                   {analizando ? 'Analizando...' : 'Analizar PDF'}
@@ -329,7 +329,7 @@ export default function CargaPdfPage() {
               {imagenesIndice && imagenesIndice.length > 0 && (
                 <p className="mt-3 text-xs text-gray-500">
                   Identifica la foto correcta y actualiza el valor <strong>indice_foto</strong> en{' '}
-                  <a href="/admin/configuracion" style={{ color: '#8B0000' }} className="font-semibold hover:underline">
+                  <a href="/admin/configuracion" style={{ color: '#E00034' }} className="font-semibold hover:underline">
                     Configuración
                   </a>.
                 </p>

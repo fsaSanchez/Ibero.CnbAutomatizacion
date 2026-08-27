@@ -75,7 +75,7 @@ public class CorreoIngestaService : ICorreoIngestaService
             }
 
             //Correos que indican que se detuvo una busqueda. 
-            const string textoEnAsuntoDetenerDifusion= "Cese de difusión";
+            const string textoEnAsuntoDetenerDifusion= "Cese de difusi";
             if (correo.Asunto.Contains(textoEnAsuntoDetenerDifusion))
                 return;
 

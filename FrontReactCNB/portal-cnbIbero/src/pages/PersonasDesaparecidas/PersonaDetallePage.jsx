@@ -69,7 +69,7 @@ export default function PersonaDetallePage() {
       </button>
 
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <div className="h-2" style={{ backgroundColor: '#8B0000' }} />
+        <div className="h-2" style={{ backgroundColor: '#E00034' }} />
 
         <div className="p-6 sm:flex gap-6">
           <div className="sm:w-48 shrink-0 mb-4 sm:mb-0">

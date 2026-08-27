@@ -140,7 +140,7 @@ export default function BitacoraPage() {
     <div className="flex flex-1">
       <Sidebar />
       <div className="flex-1 max-w-6xl mx-auto px-4 py-6 w-full">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">Bitácora</h2>
+        <h2 className="text-xl font-bold font-display text-gray-800 mb-6">Bitácora</h2>
 
         <div className="flex gap-1 mb-6 border-b">
           {TABS.map(t => (
@@ -152,7 +152,7 @@ export default function BitacoraPage() {
                   ? 'border-b-2 text-red-800'
                   : 'text-gray-500 hover:text-gray-800'
               }`}
-              style={tab === t.id ? { borderColor: '#8B0000', color: '#8B0000' } : {}}
+              style={tab === t.id ? { borderColor: '#E00034', color: '#E00034' } : {}}
             >
               {t.label}
             </button>

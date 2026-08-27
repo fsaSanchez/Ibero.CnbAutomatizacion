@@ -59,7 +59,7 @@ export default function ConfiguracionPage() {
     <div className="flex flex-1">
       <Sidebar />
       <div className="flex-1 max-w-4xl mx-auto px-4 py-6 w-full">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">Configuración del sistema</h2>
+        <h2 className="text-xl font-bold font-display text-gray-800 mb-6">Configuración del sistema</h2>
 
         {loading && <div className="text-center py-12 text-gray-500">Cargando...</div>}
 
@@ -96,7 +96,7 @@ export default function ConfiguracionPage() {
                     <button
                       onClick={() => handleGuardar(item.clave)}
                       disabled={guardando[item.clave]}
-                      style={{ backgroundColor: '#8B0000' }}
+                      style={{ backgroundColor: '#E00034' }}
                       className="px-3 py-1.5 text-xs text-white rounded hover:opacity-90 disabled:opacity-50 cursor-pointer"
                     >
                       {guardando[item.clave] ? 'Guardando...' : 'Guardar'}

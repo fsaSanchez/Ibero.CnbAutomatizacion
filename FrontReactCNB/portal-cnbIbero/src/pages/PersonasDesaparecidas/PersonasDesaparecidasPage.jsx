@@ -86,7 +86,7 @@ export default function PersonasDesaparecidasPage() {
     <div className="flex flex-1">
       <Sidebar />
       <div className="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Personas Desaparecidas</h2>
+        <h2 className="text-xl font-bold font-display text-gray-800 mb-4">Personas Desaparecidas</h2>
 
         {mensaje && (
           <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-800 rounded text-sm">

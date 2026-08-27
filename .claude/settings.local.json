@@ -31,7 +31,20 @@
       "Bash(git reset *)",
       "Bash(git restore *)",
       "Bash(ls \"C:/Users/hp-envy/Documents/Ibero.PortalExamen/Ibero.PortalExamen\" 2>&1)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "Bash(mkdir -p _extracted)",
+      "Bash(unzip -o \"alverata-maisfontes.2700.zip\" -d _extracted)",
+      "Bash(identify \"Logotipo/Logo IBERO Tijuana \\(Blanco Transparencia\\)@4x.png\")",
+      "Bash(identify \"Logotipo/LOGO Ibero Tijuana - Fondo Rojo.png\")",
+      "Bash(identify \"Cintillo General.jpg\")",
+      "Bash(identify \"Logotipo/Rúbrica/PNG-VERTICAL-RUBRICA-ITJ.png\")",
+      "Bash(identify \"Logotipo/Rúbrica/RUBRICA-IT.png\")",
+      "Bash(python3 -c \"print\\('no python'\\)\")",
+      "Bash(set -e)",
+      "Bash(mkdir -p __TRACKED_VAR__/brand __TRACKED_VAR__/fonts)",
+      "Bash(cp __TRACKED_VAR__/Logotipo/Rúbrica/PNG-VERTICAL-RUBRICA-ITJ.png __TRACKED_VAR__/brand/rubrica-ibero-blanco.png)",
+      "Bash(cp __TRACKED_VAR__/Tipografía/_extracted/alverata.ttf __TRACKED_VAR__/fonts/alverata.ttf)",
+      "Bash(taskkill //F //IM node.exe //T)"
     ]
   }
 }
