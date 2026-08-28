@@ -57,6 +57,36 @@ public class OpenAiExtractorService : IOpenAiExtractorService
         return parcial;
     }
 
+    public async Task<string?> ExtraerFUIAsync(string cuerpoCorreo)
+    {
+        var contenido = cuerpoCorreo.Length > 4000 ? cuerpoCorreo[..4000] : cuerpoCorreo;
+        var prompt =
+            "Extrae el Folio Único de Identificación (FUI) del siguiente contenido de un correo electrónico.\n" +
+            "El FUI tiene el formato: 'FI' + 2 dígitos + '-' + 5 grupos de caracteres hexadecimales separados por guiones.\n" +
+            "Ejemplo: FI26-1B14E1C30-EC2F-4A1D-A74F-273B6C93279A\n" +
+            "Responde ÚNICAMENTE con el FUI encontrado, sin texto adicional, sin markdown.\n" +
+            "Si no encuentras ningún FUI en el contenido, responde exactamente: NULL\n\n" +
+            "CONTENIDO:\n" + contenido;
+
+        try
+        {
+            var completion = await _chatClient.CompleteChatAsync(
+            [
+                new SystemChatMessage(
+                    "Eres un extractor preciso de identificadores en texto. Respondes solo el dato solicitado, sin explicaciones."),
+                new UserChatMessage(prompt)
+            ]);
+
+            var respuesta = completion.Value.Content[0].Text.Trim();
+            return string.Equals(respuesta, "NULL", StringComparison.OrdinalIgnoreCase) ? null : respuesta;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al llamar OpenAI para extraer FUI de correo de cese de difusión");
+            return null;
+        }
+    }
+
     private static string ConstruirPrompt(string texto, string camposFaltantes)
     {
         var sb = new StringBuilder();

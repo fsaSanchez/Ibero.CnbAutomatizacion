@@ -19,6 +19,7 @@ export default function Sidebar() {
       <NavLink to="/admin/cargar-pdf" className={linkClass}>Cargar PDF</NavLink>
       <NavLink to="/admin/configuracion" className={linkClass}>Configuración</NavLink>
       <NavLink to="/admin/bitacora" className={linkClass}>Bitácora</NavLink>
+      <NavLink to="/admin/cese-difusion" className={linkClass}>Cese de difusión</NavLink>
     </aside>
   )
 }

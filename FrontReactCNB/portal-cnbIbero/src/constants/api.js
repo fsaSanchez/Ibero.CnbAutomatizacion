@@ -11,5 +11,6 @@ export const API = {
   bitacoraGeneral: `${BASE_URL}/api/bitacora/general`,
   cargaPdfManual: `${BASE_URL}/api/personas/cargar-pdf-manual`,
   listarImagenesPdf: `${BASE_URL}/api/personas/pdf/listar-imagenes`,
+  ceseDifusion: `${BASE_URL}/api/personas/cese-difusion`,
   archivo: (ruta) => `${BASE_URL}/api/Personas/archivo?ruta=${encodeURIComponent(ruta)}`,
 }

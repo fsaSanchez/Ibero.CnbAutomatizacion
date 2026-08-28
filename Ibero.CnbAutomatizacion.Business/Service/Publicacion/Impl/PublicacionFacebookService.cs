@@ -89,6 +89,55 @@ public class PublicacionFacebookService(
         return CreateResponseFail($"Error al publicar en Facebook: {mensajeError}", 502);
     }
 
+    /// <summary>
+    /// Elimina de Facebook todas las publicaciones exitosas registradas para una persona
+    /// (usado por el proceso de cese de difusión). No modifica PublicarAsync.
+    /// </summary>
+    public async Task<int> EliminarPublicacionesDePersonaAsync(long idPersonaDesaparecida)
+    {
+        var publicaciones = (await bitacoraRepo.GetByPersonaAsync(idPersonaDesaparecida))
+            .Where(p => p.EstadoPublicacion == "exitosa" && !string.IsNullOrWhiteSpace(p.IdPublicacionExterna))
+            .ToList();
+
+        if (publicaciones.Count == 0)
+            return 0;
+
+        var accessToken = configuration["Facebook:AccessToken"] ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(accessToken))
+        {
+            logger.LogWarning("No se pudo eliminar publicaciones de Facebook para persona {Id}: falta Facebook:AccessToken",
+                idPersonaDesaparecida);
+            return 0;
+        }
+
+        var eliminadas = 0;
+        foreach (var publicacion in publicaciones)
+        {
+            try
+            {
+                var ok = await facebookClient.EliminarPublicacionAsync(publicacion.IdPublicacionExterna!, accessToken);
+                if (ok)
+                {
+                    publicacion.EstadoPublicacion = "eliminada";
+                    await bitacoraRepo.UpdateAsync(publicacion);
+                    eliminadas++;
+                }
+                else
+                {
+                    logger.LogWarning("No se pudo eliminar de Facebook la publicación {PostId} (persona {Id})",
+                        publicacion.IdPublicacionExterna, idPersonaDesaparecida);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error al eliminar de Facebook la publicación {PostId} (persona {Id})",
+                    publicacion.IdPublicacionExterna, idPersonaDesaparecida);
+            }
+        }
+
+        return eliminadas;
+    }
+
     private async Task<string?> IntentarPublicarAsync(
         PersonaDesaparecidum persona, string pageId, string accessToken, string caption)
     {

@@ -33,6 +33,10 @@ public class PersonaDesaparecidaRepository : IPersonaDesaparecidaRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.IdPersonaDesaparecida == id && x.Activo);
 
+    public async Task<PersonaDesaparecidum?> GetByFolioAsync(string folio)
+        => await _context.PersonaDesaparecida
+            .FirstOrDefaultAsync(x => x.FolioUnicoIdentificacion == folio);
+
     public async Task<List<PersonaDesaparecidum>> GetByCorreoRawAsync(long idCorreoRaw)
         => await _context.PersonaDesaparecida
             .Where(x => x.IdCorreoRaw == idCorreoRaw && x.Activo == true)

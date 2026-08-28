@@ -52,6 +52,15 @@ public class PersonasController : ControllerBase
     public async Task<IActionResult> Publicar(long id)
         => Ok(await _personaDesaparecidaService.PublicarAsync(id));
 
+    [HttpPost("cese-difusion")]
+    public async Task<IActionResult> CeseDifusion([FromBody] CeseDifusionRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request?.Fui))
+            return Ok(Fail("El FUI es requerido."));
+
+        return Ok(await _personaDesaparecidaService.CeseDifusionAsync(request.Fui.Trim()));
+    }
+
     [HttpPost("cargar-pdf-manual")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> CargarPdfManual(IFormFile archivo)

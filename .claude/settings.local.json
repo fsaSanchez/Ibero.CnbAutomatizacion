@@ -44,7 +44,11 @@
       "Bash(mkdir -p __TRACKED_VAR__/brand __TRACKED_VAR__/fonts)",
       "Bash(cp __TRACKED_VAR__/Logotipo/Rúbrica/PNG-VERTICAL-RUBRICA-ITJ.png __TRACKED_VAR__/brand/rubrica-ibero-blanco.png)",
       "Bash(cp __TRACKED_VAR__/Tipografía/_extracted/alverata.ttf __TRACKED_VAR__/fonts/alverata.ttf)",
-      "Bash(taskkill //F //IM node.exe //T)"
+      "Bash(taskkill //F //IM node.exe //T)",
+      "Bash(node -e \" *)",
+      "Bash(break)",
+      "Bash(curl -s -X POST http://localhost:5222/api/personas/cese-difusion -H 'Content-Type: application/json' -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -d '{\"fui\":\"FI99-000000000-0000-0000-0000-000000000000\"}')",
+      "Bash(curl -s -o /dev/null -w 'HTTP %{http_code}\\\\n' -X POST http://localhost:5222/api/personas/cese-difusion -H 'Content-Type: application/json' -d '{\"fui\":\"FI99-000000000-0000-0000-0000-000000000000\"}')"
     ]
   }
 }

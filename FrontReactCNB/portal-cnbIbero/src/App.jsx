@@ -6,6 +6,7 @@ import PersonaDetallePage from './pages/PersonasDesaparecidas/PersonaDetallePage
 import ConfiguracionPage from './pages/admin/ConfiguracionPage'
 import BitacoraPage from './pages/admin/BitacoraPage'
 import CargaPdfPage from './pages/admin/CargaPdfPage'
+import CeseDifusionPage from './pages/admin/CeseDifusionPage'
 import LoginPage from './pages/Auth/LoginPage'
 import Header from './components/Common/Header'
 import Footer from './components/Common/Footer'
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/admin/cargar-pdf" element={<RutaPrivada><CargaPdfPage /></RutaPrivada>} />
           <Route path="/admin/configuracion" element={<RutaPrivada><ConfiguracionPage /></RutaPrivada>} />
           <Route path="/admin/bitacora" element={<RutaPrivada><BitacoraPage /></RutaPrivada>} />
+          <Route path="/admin/cese-difusion" element={<RutaPrivada><CeseDifusionPage /></RutaPrivada>} />
           <Route path="*" element={<Navigate to="/personas" replace />} />
         </Routes>
       </main>

@@ -44,6 +44,21 @@ public class FacebookGraphClient(HttpClient httpClient) : IFacebookGraphClient
         return await ExtraerIdAsync(response);
     }
 
+    public async Task<bool> EliminarPublicacionAsync(string idPublicacionExterna, string accessToken)
+    {
+        var response = await httpClient.DeleteAsync(
+            $"{idPublicacionExterna}?access_token={Uri.EscapeDataString(accessToken)}");
+
+        if (response.IsSuccessStatusCode)
+            return true;
+
+        // Si el post ya no existe en Facebook (borrado manual, expiró, etc.), el objetivo
+        // de la eliminación ya se cumplió, así que se considera éxito.
+        var json = await response.Content.ReadAsStringAsync();
+        return json.Contains("does not exist", StringComparison.OrdinalIgnoreCase)
+            || json.Contains("\"code\":100", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static async Task<string?> ExtraerIdAsync(HttpResponseMessage response)
     {
         if (!response.IsSuccessStatusCode)

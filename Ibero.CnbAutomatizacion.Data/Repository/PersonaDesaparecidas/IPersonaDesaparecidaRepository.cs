@@ -9,6 +9,7 @@ public interface IPersonaDesaparecidaRepository
     Task UpdateAsync(PersonaDesaparecidum entity);
     Task<PersonaDesaparecidum?> GetByIdAsync(long id);
     Task<PersonaDesaparecidum?> GetByIdWithFotosAsync(long id);
+    Task<PersonaDesaparecidum?> GetByFolioAsync(string folio);
     Task<List<PersonaDesaparecidum>> GetByCorreoRawAsync(long idCorreoRaw);
     Task<List<PersonaDesaparecidum>> GetIncompletosAsync();
     Task<List<PersonaDesaparecidum>> GetAllAsync();

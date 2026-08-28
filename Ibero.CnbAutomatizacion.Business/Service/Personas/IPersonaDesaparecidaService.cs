@@ -9,5 +9,6 @@ public interface IPersonaDesaparecidaService
     Task<CommonResponse> GetByIdAsync(long id);
     Task<CommonResponse> DeleteAsync(long id);
     Task<CommonResponse> PublicarAsync(long id);
+    Task<CommonResponse> CeseDifusionAsync(string fui);
     Task<CommonResponse> ObtenerArchivoBase64Async(string ruta);
 }

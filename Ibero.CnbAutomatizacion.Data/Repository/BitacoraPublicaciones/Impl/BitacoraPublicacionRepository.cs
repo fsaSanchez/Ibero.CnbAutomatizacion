@@ -28,6 +28,12 @@ public class BitacoraPublicacionRepository : IBitacoraPublicacionRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task UpdateAsync(BitacoraPublicacion entity)
+    {
+        _context.BitacoraPublicacions.Update(entity);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<bool> HuboPublicacionExitosaHoyAsync()
     {
         var hoy = DateTime.Now.Date;
