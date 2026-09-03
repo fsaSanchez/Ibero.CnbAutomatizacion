@@ -24,14 +24,17 @@ public class GraphMailService : IGraphMailService
     public async Task<List<MensajeCorreoGraph>> ObtenerCorreosNoLeidosAsync()
     {
         var resultado = new List<MensajeCorreoGraph>();
-
+        var hoy = DateTime.Today;
+        var mañana = hoy.AddDays(1);
         var mensajes = await _graphClient.Users[_buzon].Messages
-            .GetAsync(req =>
-            {
-                req.QueryParameters.Filter = "isRead eq false";
-                req.QueryParameters.Select = ["id", "subject", "from", "receivedDateTime", "body"];
-                req.QueryParameters.Top = 50;
-            });
+        .GetAsync(req =>
+        {
+            // Combinar condiciones con "and"
+            req.QueryParameters.Filter =
+     $"isRead eq false and receivedDateTime ge {hoy:yyyy-MM-ddT00:00:00Z} and receivedDateTime lt {mañana:yyyy-MM-ddT00:00:00Z}";
+            req.QueryParameters.Select = ["id", "subject", "from", "receivedDateTime", "body"];
+            req.QueryParameters.Top = 500;
+        });
 
         if (mensajes?.Value == null) return resultado;
 

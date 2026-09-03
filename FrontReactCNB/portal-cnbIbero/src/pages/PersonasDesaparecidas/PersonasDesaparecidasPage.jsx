@@ -1,61 +1,85 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useAuth } from '../../hooks/useAuth'
 import { API } from '../../constants/api'
 import { authHeader } from '../../utilities/auth'
+import { setResultado, setFiltrosAplicados, FILTROS_INICIALES } from '../../store/slices/personasSlice'
 import TarjetaPersona from '../../components/PersonasDesaparecidas/TarjetaPersona'
 import FiltrosPersonas from '../../components/PersonasDesaparecidas/FiltrosPersonas'
 import Sidebar from '../../components/Common/Sidebar'
 
-const FILTROS_INICIALES = { folio: '', nombre: '', estado: '', fechaHechos: '', busqueda: '' }
 const TAMANO_PAGINA = 20
+
+/** Ventana de números de página a mostrar alrededor de la página actual. */
+function paginasVisibles(pagina, totalPaginas) {
+  const rango = 2
+  const inicio = Math.max(1, pagina - rango)
+  const fin = Math.min(totalPaginas, pagina + rango)
+  const paginas = []
+  for (let p = inicio; p <= fin; p++) paginas.push(p)
+  return paginas
+}
 
 export default function PersonasDesaparecidasPage() {
   const { isAdmin } = useAuth()
-  const [filtros, setFiltros] = useState(FILTROS_INICIALES)
-  const [filtrosAplicados, setFiltrosAplicados] = useState(FILTROS_INICIALES)
-  const [pagina, setPagina] = useState(1)
-  const [datos, setDatos] = useState({ datos: [], totalRegistros: 0, totalPaginas: 1 })
+  const dispatch = useDispatch()
+  const { datos, totalRegistros, totalPaginas, pagina, filtrosAplicados, cargado } = useSelector(s => s.personas)
+
+  const [filtros, setFiltros] = useState(filtrosAplicados)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [mensaje, setMensaje] = useState(null)
 
-  const cargar = useCallback(async () => {
+  const cargar = useCallback(async (paginaActual, filtrosActuales) => {
     setLoading(true)
     setError(null)
     try {
-      const params = new URLSearchParams({ pagina, tamanioPagina: TAMANO_PAGINA })
-      if (filtrosAplicados.folio) params.set('folio', filtrosAplicados.folio)
-      if (filtrosAplicados.nombre) params.set('nombre', filtrosAplicados.nombre)
-      if (filtrosAplicados.estado) params.set('estado', filtrosAplicados.estado)
-      if (filtrosAplicados.fechaHechos) params.set('fechaHechos', filtrosAplicados.fechaHechos)
-      if (filtrosAplicados.busqueda) params.set('busqueda', filtrosAplicados.busqueda)
+      const params = new URLSearchParams({ pagina: paginaActual, tamanioPagina: TAMANO_PAGINA })
+      if (filtrosActuales.folio) params.set('folio', filtrosActuales.folio)
+      if (filtrosActuales.nombre) params.set('nombre', filtrosActuales.nombre)
+      if (filtrosActuales.estado) params.set('estado', filtrosActuales.estado)
+      if (filtrosActuales.fechaHechos) params.set('fechaHechos', filtrosActuales.fechaHechos)
+      if (filtrosActuales.busqueda) params.set('busqueda', filtrosActuales.busqueda)
 
       const res = await fetch(`${API.personas}?${params}`)
       if (!res.ok) throw new Error(`Error ${res.status}`)
       const json = await res.json()
-      setDatos(json.data ?? { datos: [], totalRegistros: 0, totalPaginas: 1 })
+      const data = json.data ?? { datos: [], totalRegistros: 0, pagina: 1, tamanioPagina: TAMANO_PAGINA }
+      dispatch(setResultado(data))
     } catch (e) {
       setError(e.message)
     } finally {
       setLoading(false)
     }
-  }, [filtrosAplicados, pagina])
+  }, [dispatch])
 
-  useEffect(() => { cargar() }, [cargar])
+  // Solo se consulta la API si no hay datos ya cargados en memoria (p.ej. primera visita
+  // de la sesión). Al volver desde el detalle de una persona, la lista sigue en Redux y
+  // no se vuelve a pedir — los datos no cambiaron, así que no tiene sentido recargarlos.
+  useEffect(() => {
+    if (!cargado) cargar(pagina, filtrosAplicados)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function handleCambioFiltro(campo, valor) {
     setFiltros(prev => ({ ...prev, [campo]: valor }))
   }
 
   function handleBuscar() {
-    setFiltrosAplicados(filtros)
-    setPagina(1)
+    dispatch(setFiltrosAplicados(filtros))
+    cargar(1, filtros)
   }
 
   function handleLimpiar() {
     setFiltros(FILTROS_INICIALES)
-    setFiltrosAplicados(FILTROS_INICIALES)
-    setPagina(1)
+    dispatch(setFiltrosAplicados(FILTROS_INICIALES))
+    cargar(1, FILTROS_INICIALES)
+  }
+
+  function handleCambiarPagina(nuevaPagina) {
+    if (nuevaPagina < 1 || nuevaPagina > totalPaginas || nuevaPagina === pagina) return
+    cargar(nuevaPagina, filtrosAplicados)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   async function handleEliminar(id) {
@@ -63,7 +87,7 @@ export default function PersonasDesaparecidasPage() {
       const res = await fetch(API.eliminar(id), { method: 'DELETE', headers: authHeader() })
       const json = await res.json()
       setMensaje(json.message)
-      cargar()
+      cargar(pagina, filtrosAplicados)
     } catch {
       setMensaje('Error al eliminar')
     }
@@ -75,7 +99,7 @@ export default function PersonasDesaparecidasPage() {
       const res = await fetch(API.publicar(id), { method: 'POST', headers: authHeader() })
       const json = await res.json()
       setMensaje(json.message)
-      cargar()
+      cargar(pagina, filtrosAplicados)
     } catch {
       setMensaje('Error al publicar')
     }
@@ -115,16 +139,16 @@ export default function PersonasDesaparecidasPage() {
         {!loading && !error && (
           <>
             <p className="text-sm text-gray-500 mb-4">
-              {datos.totalRegistros} {datos.totalRegistros === 1 ? 'persona encontrada' : 'personas encontradas'}
+              {totalRegistros} {totalRegistros === 1 ? 'persona encontrada' : 'personas encontradas'}
             </p>
 
-            {datos.datos.length === 0 ? (
+            {datos.length === 0 ? (
               <div className="text-center py-12 text-gray-400">
                 No se encontraron personas con los filtros aplicados.
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
-                {datos.datos.map(p => (
+                {datos.map(p => (
                   <TarjetaPersona
                     key={p.idPersonaDesaparecida}
                     persona={p}
@@ -136,21 +160,42 @@ export default function PersonasDesaparecidasPage() {
               </div>
             )}
 
-            {datos.totalPaginas > 1 && (
-              <div className="flex items-center justify-center gap-4 py-4">
+            {totalPaginas > 1 && (
+              <div className="flex items-center justify-center gap-2 py-4 flex-wrap">
                 <button
-                  onClick={() => setPagina(p => Math.max(1, p - 1))}
+                  onClick={() => handleCambiarPagina(pagina - 1)}
                   disabled={pagina === 1}
                   className="px-4 py-2 text-sm border rounded disabled:opacity-40 hover:bg-gray-50 cursor-pointer"
                 >
                   ← Anterior
                 </button>
-                <span className="text-sm text-gray-600">
-                  Página {pagina} de {datos.totalPaginas}
-                </span>
+
+                {paginasVisibles(pagina, totalPaginas)[0] > 1 && (
+                  <span className="px-2 text-sm text-gray-400">…</span>
+                )}
+
+                {paginasVisibles(pagina, totalPaginas).map(p => (
+                  <button
+                    key={p}
+                    onClick={() => handleCambiarPagina(p)}
+                    className={`w-9 h-9 text-sm rounded border cursor-pointer ${
+                      p === pagina
+                        ? 'text-white border-transparent'
+                        : 'hover:bg-gray-50 text-gray-700'
+                    }`}
+                    style={p === pagina ? { backgroundColor: '#E00034' } : {}}
+                  >
+                    {p}
+                  </button>
+                ))}
+
+                {paginasVisibles(pagina, totalPaginas).at(-1) < totalPaginas && (
+                  <span className="px-2 text-sm text-gray-400">…</span>
+                )}
+
                 <button
-                  onClick={() => setPagina(p => Math.min(datos.totalPaginas, p + 1))}
-                  disabled={pagina === datos.totalPaginas}
+                  onClick={() => handleCambiarPagina(pagina + 1)}
+                  disabled={pagina === totalPaginas}
                   className="px-4 py-2 text-sm border rounded disabled:opacity-40 hover:bg-gray-50 cursor-pointer"
                 >
                   Siguiente →

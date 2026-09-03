@@ -48,7 +48,11 @@
       "Bash(node -e \" *)",
       "Bash(break)",
       "Bash(curl -s -X POST http://localhost:5222/api/personas/cese-difusion -H 'Content-Type: application/json' -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -d '{\"fui\":\"FI99-000000000-0000-0000-0000-000000000000\"}')",
-      "Bash(curl -s -o /dev/null -w 'HTTP %{http_code}\\\\n' -X POST http://localhost:5222/api/personas/cese-difusion -H 'Content-Type: application/json' -d '{\"fui\":\"FI99-000000000-0000-0000-0000-000000000000\"}')"
+      "Bash(curl -s -o /dev/null -w 'HTTP %{http_code}\\\\n' -X POST http://localhost:5222/api/personas/cese-difusion -H 'Content-Type: application/json' -d '{\"fui\":\"FI99-000000000-0000-0000-0000-000000000000\"}')",
+      "Bash(tasklist //FI \"IMAGENAME eq dotnet.exe\")",
+      "Bash(curl -sk -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"https://localhost:7222/api/personas?pagina=1&tamanioPagina=5\" --max-time 3)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"http://localhost:5144/api/personas?pagina=1&tamanioPagina=5\" --max-time 3)",
+      "Bash(VITE_API_URL=https://localhost:7222 npx vite --port 5186)"
     ]
   }
 }

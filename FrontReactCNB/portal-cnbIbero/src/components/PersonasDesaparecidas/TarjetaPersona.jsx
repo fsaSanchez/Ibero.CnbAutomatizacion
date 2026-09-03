@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import { API } from '../../constants/api'
+import { setFoto } from '../../store/slices/fotosSlice'
 import ModalConfirmacion from './ModalConfirmacion'
 
 function Iniciales({ nombre }) {
@@ -15,25 +17,25 @@ function Iniciales({ nombre }) {
 
 export default function TarjetaPersona({ persona, isAdmin, onEliminar, onPublicar }) {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [modalEliminar, setModalEliminar] = useState(false)
-  const [fotoPrincipal, setFotoPrincipal] = useState(null)
-
-  console.log(persona);
-
+  const ruta = persona.rutaFotoPrincipal
+  const fotoPrincipal = useSelector(s => (ruta ? s.fotos[ruta] : undefined))
 
   useEffect(() => {
-    if (!persona.rutaFotoPrincipal) return
+    // Ya está en caché (p.ej. se regresó de la pantalla de detalle): no se vuelve a pedir.
+    if (!ruta || fotoPrincipal) return
     let cancelado = false
-    fetch(API.archivo(persona.rutaFotoPrincipal))
+    fetch(API.archivo(ruta))
       .then(r => r.json())
       .then(json => {
         if (cancelado || !json.success) return
         const { base64, contentType } = json.data
-        setFotoPrincipal(`data:${contentType};base64,${base64}`)
+        dispatch(setFoto({ ruta, dataUri: `data:${contentType};base64,${base64}` }))
       })
       .catch(() => {})
     return () => { cancelado = true }
-  }, [persona.rutaFotoPrincipal])
+  }, [ruta, fotoPrincipal, dispatch])
 
   return (
     <>
@@ -41,12 +43,12 @@ export default function TarjetaPersona({ persona, isAdmin, onEliminar, onPublica
         className="bg-white rounded-lg shadow-sm border overflow-hidden flex flex-col"
         style={{ height: '280px', borderTop: '3px solid #E00034' }}
       >
-        <div className="h-36 overflow-hidden shrink-0">
+        <div className="h-36 overflow-hidden shrink-0 bg-gray-100">
           {fotoPrincipal ? (
             <img
               src={fotoPrincipal}
               alt={persona.nombre }
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
             />
           ) : null}

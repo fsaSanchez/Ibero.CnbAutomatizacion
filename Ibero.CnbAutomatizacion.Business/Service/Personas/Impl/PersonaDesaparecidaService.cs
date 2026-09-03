@@ -17,14 +17,14 @@ public class PersonaDesaparecidaService(
 {
     public async Task<CommonResponse> GetPagedAsync(PersonaFilterRequest filter)
     {
-        var (items, total) = await repository.GetPagedAsync(filter);
+        var (items, total, pagina, tamanioPagina) = await repository.GetPagedAsync(filter);
         var datos = items.Adapt<List<PersonaResumenResponse>>();
         var paged = new PagedResponse<PersonaResumenResponse>
         {
             Datos = datos,
             TotalRegistros = total,
-            Pagina = filter.Pagina,
-            TamanioPagina = filter.TamanioPagina
+            Pagina = pagina,
+            TamanioPagina = tamanioPagina
         };
         return CreateResponseOk(data: paged);
     }

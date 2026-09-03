@@ -13,5 +13,5 @@ public interface IPersonaDesaparecidaRepository
     Task<List<PersonaDesaparecidum>> GetByCorreoRawAsync(long idCorreoRaw);
     Task<List<PersonaDesaparecidum>> GetIncompletosAsync();
     Task<List<PersonaDesaparecidum>> GetAllAsync();
-    Task<(List<PersonaDesaparecidum> Items, int Total)> GetPagedAsync(PersonaFilterRequest filter);
+    Task<(List<PersonaDesaparecidum> Items, int Total, int Pagina, int TamanioPagina)> GetPagedAsync(PersonaFilterRequest filter);
 }

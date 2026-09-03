@@ -55,8 +55,13 @@ public class PersonaDesaparecidaRepository : IPersonaDesaparecidaRepository
             .AsNoTracking()
             .ToListAsync();
 
-    public async Task<(List<PersonaDesaparecidum> Items, int Total)> GetPagedAsync(PersonaFilterRequest filter)
+    private const int TamanioPaginaMaximo = 100;
+
+    public async Task<(List<PersonaDesaparecidum> Items, int Total, int Pagina, int TamanioPagina)> GetPagedAsync(PersonaFilterRequest filter)
     {
+        var pagina = Math.Max(1, filter.Pagina);
+        var tamanioPagina = Math.Clamp(filter.TamanioPagina, 1, TamanioPaginaMaximo);
+
         var query = _context.PersonaDesaparecida
             .Include(p => p.FotoPersonas.Where(f => f.Activo))
             .Where(p => p.Activo)
@@ -88,10 +93,11 @@ public class PersonaDesaparecidaRepository : IPersonaDesaparecidaRepository
 
         var items = await query
             .OrderByDescending(p => p.FechaCreacion)
-            .Skip((filter.Pagina - 1) * filter.TamanioPagina)
-            .Take(filter.TamanioPagina)
+            .ThenByDescending(p => p.IdPersonaDesaparecida)
+            .Skip((pagina - 1) * tamanioPagina)
+            .Take(tamanioPagina)
             .ToListAsync();
 
-        return (items, total);
+        return (items, total, pagina, tamanioPagina);
     }
 }
