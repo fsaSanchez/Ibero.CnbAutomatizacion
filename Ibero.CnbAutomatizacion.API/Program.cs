@@ -83,9 +83,10 @@ builder.Services.AddScoped<IVwPersonasPublicablesHoyRepository, VwPersonasPublic
 builder.Services.AddScoped<IPublicacionDiariaService, PublicacionDiariaService>();
 
 // ── HttpClient para Meta Graph API (typed client) ─────────────────────────────
+var facebookGraphApiVersion = builder.Configuration["Facebook:GraphApiVersion"] ?? "v26.0";
 builder.Services.AddHttpClient<IFacebookGraphClient, FacebookGraphClient>(client =>
 {
-    client.BaseAddress = new Uri("https://graph.facebook.com/");
+    client.BaseAddress = new Uri($"https://graph.facebook.com/{facebookGraphApiVersion}/");
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 

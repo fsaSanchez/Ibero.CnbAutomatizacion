@@ -12,25 +12,59 @@ public class FacebookGraphClient(HttpClient httpClient) : IFacebookGraphClient
       byte[] fotoBytes,
       string caption)
     {
-        using var content = new MultipartFormDataContent();
-        var debugUrl = $"https://graph.facebook.com/debug_token?input_token={accessToken}&access_token={accessToken}";
-        var debug = await httpClient.GetStringAsync(debugUrl);
+        // Paso 1: subir la foto sin publicarla (published=false) para obtener su id.
+        // Paso 2: crear el post real en /feed con attached_media referenciando esa foto.
+        // Publicar directo a /photos no garantiza una historia visible en el feed público;
+        // este es el patrón que Meta documenta como confiable.
+        var photoId = await SubirFotoNoPublicadaAsync(pageId, accessToken, fotoBytes);
+        if (photoId is null)
+            return null;
 
-        // ✅ Campo correcto es "message", no "caption"
+        return await PublicarEnFeedConFotoAsync(pageId, accessToken, caption, photoId);
+    }
+
+    private async Task<string?> SubirFotoNoPublicadaAsync(string pageId, string accessToken, byte[] fotoBytes)
+    {
+        using var content = new MultipartFormDataContent();
+
         content.Add(new StringContent(accessToken), "access_token");
-        content.Add(new StringContent(caption), "message");
+        content.Add(new StringContent("false"), "published");
 
         // ✅ ByteArrayContent necesita ContentType explícito
         var imageContent = new ByteArrayContent(fotoBytes);
         imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
         content.Add(imageContent, "source", "foto.jpg");
 
-        // ✅ BaseAddress ya tiene https://graph.facebook.com/
+        // ✅ BaseAddress ya incluye https://graph.facebook.com/{version}/
         //    La ruta relativa NO debe empezar con "/"
-        var response = await httpClient.PostAsync($"v19.0/{pageId}/photos", content);
+        var response = await httpClient.PostAsync($"{pageId}/photos", content);
 
         return await ExtraerIdAsync(response);
     }
+
+ private async Task<string?> PublicarEnFeedConFotoAsync(string pageId, string accessToken, string caption, string photoId)
+{
+    // Esta es la forma que Facebook documenta, y evita problemas de encoding
+    var jsonMedia = System.Text.Json.JsonSerializer.Serialize(new { media_fbid = photoId });
+
+    using var content = new FormUrlEncodedContent(new Dictionary<string, string>
+    {
+        ["access_token"] = accessToken,
+        ["message"] = caption,
+        ["attached_media[0]"] = jsonMedia
+    });
+
+    var response = await httpClient.PostAsync($"{pageId}/feed", content);
+    var body = await response.Content.ReadAsStringAsync();
+
+    if (!response.IsSuccessStatusCode)
+    {
+        // Aqui vas a ver si sigue siendo el error de "app en desarrollo"
+        throw new Exception($"Error en /feed: {body}");
+    }
+
+    return await ExtraerIdAsync(response);
+}
 
     public async Task<string?> PublicarTextoAsync(string pageId, string accessToken, string message)
     {
@@ -40,7 +74,7 @@ public class FacebookGraphClient(HttpClient httpClient) : IFacebookGraphClient
             ["message"] = message
         });
 
-        var response = await httpClient.PostAsync($"v19.0/{pageId}/feed", content);
+        var response = await httpClient.PostAsync($"{pageId}/feed", content);
         return await ExtraerIdAsync(response);
     }
 
