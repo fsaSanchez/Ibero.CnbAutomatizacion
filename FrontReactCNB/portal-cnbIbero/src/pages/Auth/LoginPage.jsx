@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import IberoWordmark from '../../components/Common/IberoWordmark'
+import { API } from '../../constants/api'
+import { cargarRecaptcha, obtenerTokenRecaptcha } from '../../utilities/recaptcha'
 
 const LOGIN_URL = 'https://solicitudesti.ibero.mx/back/api/Auth/LoginExterno'
 // Valores asignados a "Sistema PUI" en el sistema institucional (solicitudesti.ibero.mx)
@@ -18,11 +20,38 @@ export default function LoginPage() {
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState(null)
 
+  useEffect(() => {
+    if (import.meta.env.DEV) return
+    cargarRecaptcha().catch(() => {})
+  }, [])
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError(null)
     setEnviando(true)
     try {
+      if (!import.meta.env.DEV) {
+        let recaptchaToken
+        try {
+          recaptchaToken = await obtenerTokenRecaptcha('login')
+        } catch {
+          setError('No se pudo validar reCAPTCHA. Intenta de nuevo.')
+          return
+        }
+
+        const verifyRes = await fetch(API.recaptchaVerificar, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: recaptchaToken, action: 'login' }),
+        })
+        const verifyJson = await verifyRes.json()
+
+        if (!verifyJson.success) {
+          setError('Verificación de seguridad fallida. Intenta de nuevo.')
+          return
+        }
+      }
+
       const res = await fetch(LOGIN_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -22,6 +22,8 @@ using Ibero.CnbAutomatizacion.Business.Service.CargaPdf;
 using Ibero.CnbAutomatizacion.Business.Service.CargaPdf.Impl;
 using Ibero.CnbAutomatizacion.Business.Service.Publicacion;
 using Ibero.CnbAutomatizacion.Business.Service.Publicacion.Impl;
+using Ibero.CnbAutomatizacion.Business.Service.Recaptcha;
+using Ibero.CnbAutomatizacion.Business.Service.Recaptcha.Impl;
 using Ibero.CnbAutomatizacion.Data.Persistence.CNB_Ibero;
 using Ibero.CnbAutomatizacion.Data.Repository.VwPersonasPublicables;
 using Ibero.CnbAutomatizacion.Data.Repository.VwPersonasPublicables.Impl;
@@ -88,6 +90,13 @@ builder.Services.AddHttpClient<IFacebookGraphClient, FacebookGraphClient>(client
 {
     client.BaseAddress = new Uri($"https://graph.facebook.com/{facebookGraphApiVersion}/");
     client.Timeout = TimeSpan.FromSeconds(30);
+});
+
+// ── HttpClient para reCAPTCHA v3 (typed client) ───────────────────────────────
+builder.Services.AddHttpClient<IRecaptchaService, RecaptchaService>(client =>
+{
+    client.BaseAddress = new Uri("https://www.google.com/recaptcha/api/");
+    client.Timeout = TimeSpan.FromSeconds(15);
 });
 
 // ── Filtros genéricos y dashboard ─────────────────────────────────────────────

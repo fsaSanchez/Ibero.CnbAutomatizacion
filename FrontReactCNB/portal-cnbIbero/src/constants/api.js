@@ -1,5 +1,8 @@
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'https://localhost:7222'
 
+export const RECAPTCHA_SITE_KEY =
+  import.meta.env.VITE_RECAPTCHA_SITE_KEY ?? '6Lc2vJEtAAAAAA2BNN5pDE66cTxqNZAQwKnbrkxf'
+
 export const API = {
   personas: `${BASE_URL}/api/personas`,
   personaById: (id) => `${BASE_URL}/api/personas/${id}`,
@@ -12,5 +15,6 @@ export const API = {
   cargaPdfManual: `${BASE_URL}/api/personas/cargar-pdf-manual`,
   listarImagenesPdf: `${BASE_URL}/api/personas/pdf/listar-imagenes`,
   ceseDifusion: `${BASE_URL}/api/personas/cese-difusion`,
+  recaptchaVerificar: `${BASE_URL}/api/recaptcha/verificar`,
   archivo: (ruta) => `${BASE_URL}/api/Personas/archivo?ruta=${encodeURIComponent(ruta)}`,
 }
