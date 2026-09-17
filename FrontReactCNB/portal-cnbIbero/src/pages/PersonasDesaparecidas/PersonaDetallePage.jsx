@@ -77,7 +77,7 @@ export default function PersonaDetallePage() {
               <img
                 src={fotoPrincipal}
                 alt={persona.nombre}
-                className="w-full aspect-square object-cover rounded-lg"
+                className="w-full aspect-square object-contain bg-gray-100 rounded-lg"
               />
             ) : loadingFoto ? (
               <div className="w-full aspect-square rounded-lg bg-gray-100 flex items-center justify-center">
@@ -159,7 +159,7 @@ export default function PersonaDetallePage() {
                   key={f.idFotoPersona}
                   src={f.rutaDisco}
                   alt="Foto"
-                  className="w-24 h-24 object-cover rounded-lg border"
+                  className="w-24 h-24 object-contain bg-gray-100 rounded-lg border"
                 />
               ))}
             </div>
